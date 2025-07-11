@@ -8,17 +8,25 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
-@app.route("/sentiment-analysis")
-def sentiment():
-    return "<h1>Sentiment Analysis</h1><p>Coming soon - Azure Text Analytics integration</p>"
+@app.route("/resume-screener")
+def resume_screener():
+    return "<h1>Resume Screener Bot</h1><p>Coming soon - Azure AI Document Intelligence & OpenAI integration for intelligent resume analysis</p>"
 
-@app.route("/chatbot")
-def chatbot():
-    return "<h1>AI Chatbot</h1><p>Coming soon - Azure OpenAI integration</p>"
+@app.route("/blog-summarizer")
+def blog_summarizer():
+    return "<h1>Blog Summarizer</h1><p>Coming soon - Azure OpenAI integration for automatic blog content summarization</p>"
 
-@app.route("/tts")
-def tts():
-    return "<h1>Text-to-Speech</h1><p>Coming soon - Azure Speech Services integration</p>"
+@app.route("/meeting-analyst")
+def meeting_analyst():
+    return "<h1>Meeting Analyst</h1><p>Coming soon - Azure Speech-to-Text & OpenAI integration for meeting transcription and analysis</p>"
+
+@app.route("/serverless-chatbot")
+def serverless_chatbot():
+    return "<h1>Serverless Chatbot</h1><p>Coming soon - Azure Functions & OpenAI integration for scalable conversational AI</p>"
+
+@app.route("/image-captioning")
+def image_captioning():
+    return "<h1>Image Captioning App</h1><p>Coming soon - Azure Computer Vision integration for automatic image description generation</p>"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
