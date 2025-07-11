@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Projects - Clyde Juan</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #0078d4, #106ebe);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .project-card h3 {
+            color: #0078d4;
+            margin-top: 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #0078d4;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background: #106ebe;
+        }
+        .status {
+            display: inline-block;
+            background: #ffc107;
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem 0;
+            border-top: 1px solid #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Azure Projects Portfolio</h1>
+            <p class="subtitle">Showcasing hands-on experience with Microsoft Azure AI services</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="projects-grid">
+            <div class="project-card">
+                <h3>Sentiment Analysis</h3>
+                <p>Analyze text sentiment using Azure Text Analytics API. This project demonstrates real-time sentiment analysis with confidence scores and emotional insights.</p>
+                <div class="status">Coming Soon</div>
+                <br>
+                <a href="/sentiment-analysis" class="btn">View Project</a>
+            </div>
+
+            <div class="project-card">
+                <h3>AI Chatbot</h3>
+                <p>Conversational AI powered by Azure OpenAI. Features intelligent responses, context awareness, and natural language understanding.</p>
+                <div class="status">Coming Soon</div>
+                <br>
+                <a href="/chatbot" class="btn">View Project</a>
+            </div>
+
+            <div class="project-card">
+                <h3>Text-to-Speech</h3>
+                <p>Convert text to natural speech using Azure Speech Services. Supports multiple languages and voice customization options.</p>
+                <div class="status">Coming Soon</div>
+                <br>
+                <a href="/tts" class="btn">View Project</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Clyde Juan - Azure Cloud Projects Portfolio</p>
+            <p>Built with Flask and deployed on Azure App Service</p>
+        </footer>
+    </div>
+</body>
+</html>
