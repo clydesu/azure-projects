@@ -14,7 +14,36 @@ def home():
 
 @app.route("/smart-receipt-tracker")
 def smart_receipt_tracker():
-    return render_template("../smart-receipt-tracker/templates/receipt_tracker.html")
+    # For now, return a simple page until we fix the template path
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Smart Receipt Tracker</title>
+        <style>
+            body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+            .container { background: #f9f9f9; padding: 30px; border-radius: 8px; }
+            h1 { color: #0066cc; }
+            .back-link { color: #0066cc; text-decoration: none; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <a href="/" class="back-link">← Back to Portfolio</a>
+            <h1>Smart Receipt Tracker</h1>
+            <p>🚧 <strong>Under Development</strong></p>
+            <p>This Azure AI-powered receipt tracker is currently being set up with:</p>
+            <ul>
+                <li>Azure Document Intelligence for receipt analysis</li>
+                <li>Azure Blob Storage for secure file storage</li>
+                <li>Azure Functions for serverless processing</li>
+                <li>Flask web interface</li>
+            </ul>
+            <p><em>Coming soon with full functionality!</em></p>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route("/upload-receipt", methods=["POST"])
 def upload_receipt():

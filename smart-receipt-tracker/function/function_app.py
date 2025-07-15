@@ -57,7 +57,7 @@ def process_receipt(req: func.HttpRequest) -> func.HttpResponse:
 
 def upload_to_blob(file_data, filename):
     """Upload file to Azure Blob Storage"""
-    connection_string = os.environ["AZURE_STORAGE_CONNECTION_STRING"]
+    connection_string = os.environ["STORAGE_CONNECTION_STRING"]  # Updated to match your env var
     container_name = "receipts"
     
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
@@ -71,8 +71,8 @@ def upload_to_blob(file_data, filename):
 
 def analyze_receipt(blob_url):
     """Analyze receipt using Azure Document Intelligence"""
-    endpoint = os.environ["DOCUMENT_INTELLIGENCE_ENDPOINT"]
-    key = os.environ["DOCUMENT_INTELLIGENCE_KEY"]
+    endpoint = os.environ["DOCUMENT_INTELLIGENCE_ENDPOINT"]  # Matches your env var
+    key = os.environ["FORM_RECOGNIZER_KEY"]  # Updated to match your env var
     
     document_analysis_client = DocumentAnalysisClient(
         endpoint=endpoint, 
