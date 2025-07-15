@@ -31,7 +31,7 @@ def smart_receipt_tracker():
         <div class="container">
             <a href="/" class="back-link">← Back to Portfolio</a>
             <h1>Smart Receipt Tracker</h1>
-            <p>🚧 <strong>Under Development</strong></p>
+            <p>🚧 <strong>Under Development</strong> - Updated July 15, 2025</p>
             <p>This Azure AI-powered receipt tracker is currently being set up with:</p>
             <ul>
                 <li>Azure Document Intelligence for receipt analysis</li>
