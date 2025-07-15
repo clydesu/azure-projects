@@ -157,9 +157,7 @@
             <a href="../index.html" class="back-link">← Back to Portfolio</a>
             
             <div class="demo-note">
-                <strong>Free Tier Demo:</strong> This project uses Azure Static Web Apps (free) + Azure Cognitive Services (free tier) for cost-effective receipt processing.
-                <br><br>
-                <strong>Local Testing:</strong> When running locally, mock data is shown. Deploy to Azure Static Web Apps for real AI analysis.
+                <strong>Free Tier Demo:</strong> This project uses Azure Web Apps + Azure Cognitive Services (free tier) for cost-effective receipt processing.
             </div>
             
             <div class="upload-section">
@@ -213,24 +211,7 @@
                 // Convert file to base64
                 const base64 = await fileToBase64(file);
                 
-                // Check if running locally (localhost)
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    // Local demo - show mock results
-                    setTimeout(() => {
-                        const mockResult = {
-                            status: 'success',
-                            merchant_name: 'Demo Store (Local Testing)',
-                            total: '25.99',
-                            date: '2025-07-15',
-                            items: ['Coffee', 'Sandwich', 'Tax'],
-                            processed_at: new Date().toISOString()
-                        };
-                        displayResults(mockResult);
-                    }, 2000); // Simulate processing time
-                    return;
-                }
-                
-                // Call Azure Function API (when deployed)
+                // Call API endpoint
                 const response = await fetch('/api/process_receipt', {
                     method: 'POST',
                     headers: {
@@ -240,6 +221,10 @@
                         image_data: base64
                     })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const result = await response.json();
                 
@@ -251,7 +236,7 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                displayError('Network error: ' + error.message + '. Deploy to Azure Static Web Apps for full functionality.');
+                displayError('Network error: ' + error.message);
             } finally {
                 loading.style.display = 'none';
                 processBtn.disabled = false;
@@ -271,15 +256,21 @@
             results.className = 'results';
             results.style.display = 'block';
             
-            resultContent.innerHTML = `
+            let html = `
                 <div class="result-item">
                     <strong>🏪 Merchant:</strong> ${data.merchant_name || 'Not detected'}
+                    ${data.confidence_scores && data.confidence_scores.merchant_name ? 
+                      ` <span style="color: #666;">(${Math.round(data.confidence_scores.merchant_name * 100)}% confidence)</span>` : ''}
                 </div>
                 <div class="result-item">
                     <strong>💰 Total:</strong> $${data.total || '0.00'}
+                    ${data.confidence_scores && data.confidence_scores.total ? 
+                      ` <span style="color: #666;">(${Math.round(data.confidence_scores.total * 100)}% confidence)</span>` : ''}
                 </div>
                 <div class="result-item">
                     <strong>📅 Date:</strong> ${data.date || 'Not detected'}
+                    ${data.confidence_scores && data.confidence_scores.date ? 
+                      ` <span style="color: #666;">(${Math.round(data.confidence_scores.date * 100)}% confidence)</span>` : ''}
                 </div>
                 <div class="result-item">
                     <strong>🛍️ Items:</strong> ${data.items && data.items.length ? data.items.join(', ') : 'None detected'}
@@ -288,6 +279,24 @@
                     <strong>⏰ Processed:</strong> ${new Date(data.processed_at).toLocaleString()}
                 </div>
             `;
+            
+            if (data.note) {
+                html += `
+                    <div class="result-item" style="background: #fff3cd; border-left-color: #ffc107;">
+                        <strong>💡 Note:</strong> ${data.note}
+                    </div>
+                `;
+            }
+            
+            if (data.blob_url) {
+                html += `
+                    <div class="result-item" style="background: #e8f5e8; border-left-color: #28a745;">
+                        <strong>☁️ Stored:</strong> Receipt uploaded to Azure Blob Storage
+                    </div>
+                `;
+            }
+            
+            resultContent.innerHTML = html;
         }
 
         function displayError(error) {

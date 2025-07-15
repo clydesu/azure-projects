@@ -1,33 +1,85 @@
-# Azure Projects Portfolio
+# Smart Receipt Tracker - Azure Web App + Function App
 
-Learning Azure cloud development through hands-on projects. Each project uses Azure's free tier to keep costs at $0 while exploring different cloud services.
+A professional receipt processing application using Azure AI Document Intelligence and Blob Storage, deployed with Azure Web App and Function App.
 
-## Projects
+## 🏗️ Architecture
 
-### [Smart Receipt Tracker](./smart-receipt-tracker/)
-> Upload receipt photos and let Azure AI extract the data
+- **Azure Web App**: Hosts the Flask application and frontend
+- **Azure Function App**: Serverless receipt processing API
+- **Azure Document Intelligence**: AI-powered OCR for receipt analysis
+- **Azure Blob Storage**: Secure receipt image storage
+- **GitHub Actions**: Automated CI/CD deployment
 
-Built this to learn Azure AI services while solving a real problem - tracking expenses. Uses Document Intelligence to read receipts automatically.
+## 🚀 Features
 
-**Tech**: Azure Static Web Apps, Azure Functions, Document Intelligence  
-**Cost**: Free tier only  
-**[📖 Read More](./smart-receipt-tracker/README.md)** | **[🚀 Deploy Guide](./smart-receipt-tracker/DEPLOYMENT.md)**
+- ✅ Real-time receipt OCR processing
+- ✅ Confidence scores for extracted data
+- ✅ Secure blob storage integration
+- ✅ Professional UI with responsive design
+- ✅ Free tier compatible (F0 Document Intelligence)
+- ✅ GitHub Actions deployment
 
-### 🚧 More Projects Coming
-- Resume analysis with Azure AI
-- Chat bot with Azure Bot Service
-- Data dashboard with Power BI
+## 📁 Project Structure
 
-## Live Demo
+```
+├── app.py                          # Flask web application
+├── requirements.txt                # Python dependencies
+├── index.html                      # Portfolio homepage
+├── smart-receipt-tracker/
+│   ├── index.html                  # Receipt tracker SPA
+│   └── api/
+│       ├── function_app.py         # Azure Function for receipt processing
+│       └── requirements.txt        # Function-specific dependencies
+├── .github/workflows/              # GitHub Actions for deployment
+└── AZURE_SETUP.md                 # Azure configuration guide
+```
 
-**[View Portfolio →](https://azureprojects.clydejuan.me)**
+## 🔧 Configuration
 
-## What I'm Learning
+The application uses Azure Application Settings:
 
-- **Azure AI** - Document Intelligence for real-world OCR
-- **Serverless** - Azure Functions for backend APIs  
-- **Free Hosting** - Static Web Apps for zero-cost deployment
-- **DevOps** - GitHub Actions for auto-deployment
+### Required Settings
+- `DOCUMENT_INTELLIGENCE_ENDPOINT`
+- `DOCUMENT_INTELLIGENCE_KEY`
+- `AzureWebJobsStorage`
+- `FUNCTIONS_EXTENSION_VERSION`
+- `FUNCTIONS_WORKER_RUNTIME`
+
+## 🌐 Deployment
+
+Deployed automatically via GitHub Actions to:
+- Azure Web App (Flask application)
+- Azure Function App (API backend)
+
+## 💰 Cost Optimization
+
+- Document Intelligence F0: 500 free transactions/month
+- Storage Account: Free tier available
+- Web App: Free tier compatible
+- Function App: Consumption plan (pay-per-use)
+
+**Estimated monthly cost: $0-5** with free tier usage
+
+## 🧪 Local Testing
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run Flask app
+python app.py
+
+# Access at http://localhost:8000/smart-receipt-tracker/
+```
+
+## 📸 Demo
+
+Upload a receipt image to see:
+- Merchant name extraction
+- Total amount detection
+- Transaction date parsing
+- Line item identification
+- Confidence scores for each field
 
 ## Contact
 
