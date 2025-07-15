@@ -1,0 +1,6 @@
+# Azure Functions requirements
+azure-functions
+azure-ai-formrecognizer==3.3.0
+azure-core
+flask
+gunicorn
