@@ -76,7 +76,7 @@ def analyze_receipt_bytes(image_bytes):
     """Analyze receipt using Azure Document Intelligence with direct bytes"""
     # These will be set as environment variables in Static Web Apps
     endpoint = os.environ.get("DOCUMENT_INTELLIGENCE_ENDPOINT")
-    key = os.environ.get("DOCUMENT_INTELLIGENCE_KEY")
+    key = os.environ.get("DOCUMENT_INTELLIGENCE_KEY")  # Updated to match App Service variable
     
     if not endpoint or not key:
         return {"error": "Document Intelligence not configured"}

@@ -158,6 +158,8 @@
             
             <div class="demo-note">
                 <strong>Free Tier Demo:</strong> This project uses Azure Static Web Apps (free) + Azure Cognitive Services (free tier) for cost-effective receipt processing.
+                <br><br>
+                <strong>Local Testing:</strong> When running locally, mock data is shown. Deploy to Azure Static Web Apps for real AI analysis.
             </div>
             
             <div class="upload-section">
@@ -211,7 +213,24 @@
                 // Convert file to base64
                 const base64 = await fileToBase64(file);
                 
-                // Call Azure Function API
+                // Check if running locally (localhost)
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    // Local demo - show mock results
+                    setTimeout(() => {
+                        const mockResult = {
+                            status: 'success',
+                            merchant_name: 'Demo Store (Local Testing)',
+                            total: '25.99',
+                            date: '2025-07-15',
+                            items: ['Coffee', 'Sandwich', 'Tax'],
+                            processed_at: new Date().toISOString()
+                        };
+                        displayResults(mockResult);
+                    }, 2000); // Simulate processing time
+                    return;
+                }
+                
+                // Call Azure Function API (when deployed)
                 const response = await fetch('/api/process_receipt', {
                     method: 'POST',
                     headers: {
@@ -232,7 +251,7 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                displayError('Network error: ' + error.message);
+                displayError('Network error: ' + error.message + '. Deploy to Azure Static Web Apps for full functionality.');
             } finally {
                 loading.style.display = 'none';
                 processBtn.disabled = false;
