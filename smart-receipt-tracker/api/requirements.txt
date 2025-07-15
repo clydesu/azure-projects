@@ -1,0 +1,2 @@
+azure-functions
+azure-ai-formrecognizer==3.3.0

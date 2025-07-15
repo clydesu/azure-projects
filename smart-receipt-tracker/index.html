@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Receipt Tracker - Azure Free Tier Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-section:hover {
+            border-color: #667eea;
+            background: #f0f8ff;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin: 10px;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .results {
+            background: #e8f5e8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .results.error {
+            background: #ffe8e8;
+        }
+        
+        .results h3 {
+            color: #2d5a2d;
+            margin-bottom: 15px;
+        }
+        
+        .results.error h3 {
+            color: #a52a2a;
+        }
+        
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .demo-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .demo-note strong {
+            color: #b8860b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧾 Smart Receipt Tracker</h1>
+            <p>AI-Powered Receipt Analysis using Azure Free Tier</p>
+        </div>
+        
+        <div class="content">
+            <a href="../index.html" class="back-link">← Back to Portfolio</a>
+            
+            <div class="demo-note">
+                <strong>Free Tier Demo:</strong> This project uses Azure Static Web Apps (free) + Azure Cognitive Services (free tier) for cost-effective receipt processing.
+            </div>
+            
+            <div class="upload-section">
+                <h3>📷 Upload Receipt</h3>
+                <p>Select a receipt image (JPG, PNG) for AI analysis</p>
+                <input type="file" id="receiptFile" class="file-input" accept="image/*">
+                <button onclick="document.getElementById('receiptFile').click()" class="upload-btn">
+                    Choose File
+                </button>
+                <button onclick="processReceipt()" class="upload-btn" id="processBtn" disabled>
+                    Process Receipt
+                </button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <p>🤖 AI is analyzing your receipt...</p>
+            </div>
+            
+            <div class="results" id="results">
+                <h3>📊 Extracted Information</h3>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('receiptFile');
+        const processBtn = document.getElementById('processBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const resultContent = document.getElementById('resultContent');
+
+        fileInput.addEventListener('change', function() {
+            processBtn.disabled = !this.files.length;
+            processBtn.textContent = this.files.length ? `Process ${this.files[0].name}` : 'Process Receipt';
+        });
+
+        async function processReceipt() {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            processBtn.disabled = true;
+
+            try {
+                // Convert file to base64
+                const base64 = await fileToBase64(file);
+                
+                // Call Azure Function API
+                const response = await fetch('/api/process_receipt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image_data: base64
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    displayResults(result);
+                } else {
+                    displayError(result.error || 'Processing failed');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                displayError('Network error: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                processBtn.disabled = false;
+            }
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        function displayResults(data) {
+            results.className = 'results';
+            results.style.display = 'block';
+            
+            resultContent.innerHTML = `
+                <div class="result-item">
+                    <strong>🏪 Merchant:</strong> ${data.merchant_name || 'Not detected'}
+                </div>
+                <div class="result-item">
+                    <strong>💰 Total:</strong> $${data.total || '0.00'}
+                </div>
+                <div class="result-item">
+                    <strong>📅 Date:</strong> ${data.date || 'Not detected'}
+                </div>
+                <div class="result-item">
+                    <strong>🛍️ Items:</strong> ${data.items && data.items.length ? data.items.join(', ') : 'None detected'}
+                </div>
+                <div class="result-item">
+                    <strong>⏰ Processed:</strong> ${new Date(data.processed_at).toLocaleString()}
+                </div>
+            `;
+        }
+
+        function displayError(error) {
+            results.className = 'results error';
+            results.style.display = 'block';
+            
+            resultContent.innerHTML = `
+                <div class="result-item">
+                    <strong>❌ Error:</strong> ${error}
+                </div>
+                <div class="result-item">
+                    <strong>💡 Note:</strong> This is a demo using Azure free tier. For full functionality, configure Azure Cognitive Services.
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

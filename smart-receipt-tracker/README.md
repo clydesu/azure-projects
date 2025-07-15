@@ -1,61 +1,87 @@
 # Smart Receipt Tracker
 
-## Overview
-A serverless Azure-based application that allows users to upload receipts, automatically extract key information using Azure AI Document Intelligence, and store the results.
+> Upload receipt photos and let Azure AI extract the data automatically
 
-## Components
-- **Azure Function**: Processes receipt uploads and extracts data
-- **Azure Blob Storage**: Stores receipt images
-- **Azure Document Intelligence**: Analyzes receipts and extracts structured data
-- **Flask Web App**: Provides user interface
+![Azure](https://img.shields.io/badge/Azure-Free%20Tier-blue)
+![JavaScript](https://img.shields.io/badge/JavaScript-Frontend-yellow)
+![Python](https://img.shields.io/badge/Python-Backend-green)
 
-## Project Structure
-```
-smart-receipt-tracker/
-├── templates/
-│   └── receipt_tracker.html    # Basic HTML interface
-├── function/
-│   ├── function_app.py         # Azure Function code
-│   ├── requirements.txt        # Function dependencies
-│   └── host.json              # Function configuration
-└── README.md                  # This file
-```
+## Why I Built This
 
-## Setup Instructions
+I wanted to learn Azure AI services and build something practical for my portfolio. Receipt tracking is something everyone can relate to - we all have receipts we need to organize. Plus, I wanted to show I can build cloud solutions that cost $0 to run.
 
-### 1. Azure Resources Required
-- Azure Function App
-- Azure Storage Account (with "receipts" container)
-- Azure Document Intelligence service
+## What It Does
 
-### 2. Environment Variables for Function App
-```
-AZURE_STORAGE_CONNECTION_STRING = <your-storage-connection-string>
-DOCUMENT_INTELLIGENCE_ENDPOINT = <your-doc-intel-endpoint>
-DOCUMENT_INTELLIGENCE_KEY = <your-doc-intel-key>
-```
+1. Upload a receipt photo
+2. Azure AI reads the receipt and extracts:
+   - Store name
+   - Total amount
+   - Date
+   - List of items
+3. Shows results instantly
 
-### 3. Environment Variables for Web App
-```
-AZURE_FUNCTION_URL = <your-function-app-url>
-```
+[Screenshot of upload interface]
 
-### 4. Deploy Function
+[Screenshot of results]
+
+## How It Works
+
+**Frontend**: Simple HTML/JavaScript page hosted on Azure Static Web Apps (free)
+**Backend**: Python Azure Function that calls Document Intelligence API (free tier)
+**AI**: Azure Cognitive Services for receipt OCR (500 pages/month free)
+
+**Total cost**: $0/month
+
+## Try It Live
+
+**[Live Demo →](https://your-app-url.azurestaticapps.net)**
+
+## Local Setup
+
 ```bash
-cd function
-func azure functionapp publish <your-function-app-name>
+# Clone and navigate
+git clone https://github.com/YOUR-USERNAME/azure-projects.git
+cd azure-projects/smart-receipt-tracker
+
+# Install tools
+npm install -g @azure/static-web-apps-cli azure-functions-core-tools
+
+# Install Python deps
+cd api && pip install -r requirements.txt && cd ..
+
+# Run locally
+swa start . --api-location api
 ```
 
-## Features
-- Upload receipt images (JPG, PNG, PDF)
-- Extract merchant name, total amount, date, and items
-- Store receipts securely in Azure Blob Storage
-- Simple, clean web interface
-- Serverless architecture for cost optimization
+Open http://localhost:4280
 
-## Technology Stack
-- **Backend**: Azure Functions (Python)
+## Deploy to Azure
+
+### Quick Deploy
+1. Fork this repo
+2. Create Azure Static Web App in portal
+3. Connect to your GitHub repo
+4. Create Document Intelligence resource (free tier)
+5. Add environment variables in Static Web App settings:
+   - `DOCUMENT_INTELLIGENCE_ENDPOINT`
+   - `DOCUMENT_INTELLIGENCE_KEY`
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed steps.
+
+## What I Learned
+
+- Azure Static Web Apps for free hosting
+- Azure Functions for serverless APIs
+- Document Intelligence for OCR
+- GitHub Actions for CI/CD
+- Cost optimization with free tiers
+
+## Tech Stack
+
+- **Frontend**: Vanilla JavaScript, HTML5, CSS3
+- **Backend**: Python Azure Functions
 - **AI**: Azure Document Intelligence
-- **Storage**: Azure Blob Storage
-- **Frontend**: HTML/JavaScript (basic styling)
-- **Web Framework**: Flask (integrated with main portfolio app)
+- **Hosting**: Azure Static Web Apps
+- **Deployment**: GitHub Actions
+
+Simple and focused on learning Azure AI services.
