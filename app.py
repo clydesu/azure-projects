@@ -427,10 +427,6 @@ smart_receipt_template = """
                     <button onclick="downloadResults()" class="upload-btn" id="downloadBtn" disabled style="background: linear-gradient(45deg, #28a745, #20c997);">
                         Download Results
                     </button>
-                    <!-- Add Reset Bulk Receipts button below -->
-                    <button id="resetBulkBtn" onclick="resetBulkProcessing()" class="upload-btn">
-                        Reset
-                    </button>
                     <div id="fileList" style="margin-top: 15px;"></div>
                 </div>
             
@@ -650,17 +646,6 @@ smart_receipt_template = """
                 totalDisplay = amounts.join(' and ');
             }
 
-            // Add this function manually after the above block
-            function resetBulkProcessing() {
-                multipleFileInput.value = "";
-                fileList.innerHTML = "";
-                results.style.display = "none";
-                resultContent.innerHTML = "";
-                bulkProcessingResults = null;
-                processBulkBtn.disabled = true;
-                downloadBtn.disabled = true;
-            }
-            
             let html = `
                 <div style="background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
                     <h4 style="margin: 0 0 5px 0; font-size: 1.1rem;">Total Amount: ${totalDisplay}</h4>
@@ -844,7 +829,6 @@ def process_multiple():
         response = jsonify({"error": "An unexpected error occurred"})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 500
-
 @app.route('/blog-summarizer')
 def blog_summarizer():
     return send_from_directory('blog-summarizer', 'README.md')
@@ -867,6 +851,4 @@ def serve_static(filename):
     return send_from_directory('.', filename)
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
