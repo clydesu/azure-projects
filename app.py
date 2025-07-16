@@ -428,8 +428,8 @@ smart_receipt_template = """
                         Download Results
                     </button>
                     <!-- Add Reset Bulk Receipts button below -->
-                    <button id="resetBulkBtn" onclick="resetBulkProcessing()" class="upload-btn" style="background: linear-gradient(45deg, #dc3545, #f39c12);">
-                        Reset Bulk Receipts
+                    <button id="resetBulkBtn" onclick="resetBulkProcessing()" class="upload-btn">
+                        Reset
                     </button>
                     <div id="fileList" style="margin-top: 15px;"></div>
                 </div>
@@ -780,33 +780,33 @@ def process_receipt():
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response
-    
+
     try:
         if 'file' not in request.files:
             return jsonify({"error": "No file provided"}), 400
-        
+
         file = request.files['file']
         if file.filename == '':
             return jsonify({"error": "No file selected"}), 400
-        
+
         # Read and process file
         image_data = file.read()
         result = process_receipt_image(image_data, file.filename)
-        
+
         # Debug: log what we're sending to frontend
         logger.info(f"Sending to frontend: {result}")
-        
+
         response = jsonify(result)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
-        
+
     except Exception as e:
         logger.error(f"Error processing receipt: {e}")
         response = jsonify({"error": "An unexpected error occurred"})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 500
 
-@app.route('/api/process_multiple', methods=['POST', 'OPTIONS'])  
+@app.route('/api/process_multiple', methods=['POST', 'OPTIONS'])
 def process_multiple():
     if request.method == 'OPTIONS':
         response = jsonify({})
@@ -814,15 +814,15 @@ def process_multiple():
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response
-    
+
     try:
         if 'files' not in request.files:
             return jsonify({"error": "No files provided"}), 400
-        
+
         files = request.files.getlist('files')
         if not files or all(f.filename == '' for f in files):
             return jsonify({"error": "No files selected"}), 400
-        
+
         # Prepare images data for processing
         images_data = []
         for file in files:
@@ -832,13 +832,13 @@ def process_multiple():
                 'filename': file.filename,
                 'data': file.read()
             })
-        
+
         result = process_multiple_receipts(images_data)
-        
+
         response = jsonify(result)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
-        
+
     except Exception as e:
         logger.error(f"Error processing multiple receipts: {e}")
         response = jsonify({"error": "An unexpected error occurred"})
@@ -867,4 +867,6 @@ def serve_static(filename):
     return send_from_directory('.', filename)
 
 if __name__ == '__main__':
+    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
+    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
