@@ -1,7 +1,147 @@
-from flask import Flask, send_from_directory, render_template_string
+from flask import Flask, send_from_directory, render_template_string, request, jsonify
 import os
+import sys
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# Add smart-receipt-tracker to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), 'smart-receipt-tracker'))
+
+try:
+    from smart_receipt_processor import process_receipt_image, process_multiple_receipts
+    DOCUMENT_INTELLIGENCE_AVAILABLE = True
+    logger.info("Document Intelligence service imported successfully")
+except ImportError as e:
+    DOCUMENT_INTELLIGENCE_AVAILABLE = False
+    logger.warning(f"Document Intelligence service not available: {e}")
+
+# Document Intelligence endpoints with real Azure integration
+@app.route('/api/process_receipt', methods=['POST', 'OPTIONS'])
+def process_receipt():
+    if request.method == 'OPTIONS':
+        response = jsonify({})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response
+    
+    if not DOCUMENT_INTELLIGENCE_AVAILABLE:
+        response = jsonify({"error": "Document Intelligence service not available"})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 503
+    
+    try:
+        # Get image data from request
+        if 'file' not in request.files:
+            return jsonify({"error": "No file provided"}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+        
+        # Validate file type
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.pdf'}
+        file_ext = os.path.splitext(file.filename)[1].lower()
+        if file_ext not in allowed_extensions:
+            return jsonify({"error": "Unsupported file type. Please use JPG, PNG, BMP, TIFF, or PDF"}), 400
+        
+        # Read file data
+        image_data = file.read()
+        
+        # Validate file size (max 50MB for Document Intelligence)
+        if len(image_data) > 50 * 1024 * 1024:
+            return jsonify({"error": "File too large. Maximum size is 50MB"}), 400
+        
+        logger.info(f"Processing receipt upload: {file.filename}, size: {len(image_data)} bytes")
+        
+        # Process with Document Intelligence
+        result = process_receipt_image(image_data, file.filename)
+        
+        response = jsonify(result)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error processing receipt: {e}")
+        response = jsonify({"error": "An unexpected error occurred"})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
+
+@app.route('/api/process_multiple', methods=['POST', 'OPTIONS'])  
+def process_multiple():
+    if request.method == 'OPTIONS':
+        response = jsonify({})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response
+    
+    if not DOCUMENT_INTELLIGENCE_AVAILABLE:
+        response = jsonify({"error": "Document Intelligence service not available"})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 503
+    
+    try:
+        # Get multiple files from request
+        if 'files' not in request.files:
+            return jsonify({"error": "No files provided"}), 400
+        
+        files = request.files.getlist('files')
+        if not files or all(f.filename == '' for f in files):
+            return jsonify({"error": "No files selected"}), 400
+        
+        # Validate file count (limit to 10 files)
+        if len(files) > 10:
+            return jsonify({"error": "Maximum 10 files allowed per request"}), 400
+        
+        # Prepare images data for processing
+        images_data = []
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.pdf'}
+        
+        for file in files:
+            if file.filename == '':
+                continue
+                
+            file_ext = os.path.splitext(file.filename)[1].lower()
+            if file_ext not in allowed_extensions:
+                images_data.append({
+                    'filename': file.filename,
+                    'error': f"Unsupported file type: {file_ext}"
+                })
+                continue
+            
+            image_data = file.read()
+            if len(image_data) > 50 * 1024 * 1024:
+                images_data.append({
+                    'filename': file.filename,
+                    'error': "File too large (max 50MB)"
+                })
+                continue
+            
+            images_data.append({
+                'filename': file.filename,
+                'data': image_data
+            })
+        
+        logger.info(f"Processing {len(images_data)} receipt uploads")
+        
+        # Process with Document Intelligence
+        result = process_multiple_receipts(images_data)
+        
+        response = jsonify(result)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error processing multiple receipts: {e}")
+        response = jsonify({"error": "An unexpected error occurred"})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
 
 # Template for the main portfolio page
 portfolio_template = """
@@ -161,7 +301,7 @@ portfolio_template = """
         <div class="projects-grid">
             <div class="project-card">
                 <h3>🧾 Smart Receipt Tracker</h3>
-                <p>Receipt processing application using Azure Document Intelligence to extract merchant information, amounts, and dates from receipt images.</p>
+                <p>Professional receipt processing application powered by Azure Document Intelligence. Automatically extracts merchant information, amounts, dates, and itemized purchases from receipt images with high accuracy OCR technology.</p>
                 <a href="/smart-receipt-tracker" class="project-link">View Project</a>
             </div>
             
@@ -193,7 +333,7 @@ portfolio_template = """
         <div class="demo-section">
             <h2 style="color: white; margin-bottom: 1rem;">🚀 Live Demo</h2>
             <p style="color: white; margin-bottom: 1.5rem;">Experience the Smart Receipt Tracker in action</p>
-            <a href="https://azure-portfolio-projects.azurewebsites.net" class="demo-link" target="_blank">Try Smart Receipt Tracker</a>
+            <a href="/smart-receipt-tracker" class="demo-link">Try Smart Receipt Tracker</a>
         </div>
         
         <footer class="contact">

@@ -359,19 +359,14 @@
             processBtn.disabled = true;
 
             try {
-                // Convert file to base64
-                const base64 = await fileToBase64(file);
+                // Create FormData to send file
+                const formData = new FormData();
+                formData.append('file', file);
                 
-                // Call Azure Functions API endpoint
-                const response = await fetch('https://azure-portfolio-projects.azurewebsites.net/api/process_receipt', {
+                // Call Flask API endpoint
+                const response = await fetch('/api/process_receipt', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                        // Function key not needed for App Service with Function App
-                    },
-                    body: JSON.stringify({
-                        image_data: base64
-                    })
+                    body: formData
                 });
 
                 if (!response.ok) {
@@ -380,10 +375,10 @@
 
                 const result = await response.json();
                 
-                if (result.status === 'success') {
-                    displayResults(result);
+                if (result.error) {
+                    displayError(result.error);
                 } else {
-                    displayError(result.error || 'Processing failed');
+                    displayResults(result);
                 }
                 
             } catch (error) {
@@ -410,23 +405,16 @@
             processBulkBtn.textContent = 'Processing...';
 
             try {
-                // Convert all files to base64
-                const imageDataArray = [];
+                // Create FormData to send multiple files
+                const formData = new FormData();
                 for (let i = 0; i < files.length; i++) {
-                    const base64 = await fileToBase64(files[i]);
-                    imageDataArray.push(base64);
+                    formData.append('files', files[i]);
                 }
                 
-                // Call Azure Functions bulk processing API endpoint
-                const response = await fetch('https://azure-portfolio-projects.azurewebsites.net/api/process_multiple', {
+                // Call Flask API endpoint
+                const response = await fetch('/api/process_multiple', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                        // Function key not needed for App Service with Function App
-                    },
-                    body: JSON.stringify({
-                        images: imageDataArray
-                    })
+                    body: formData
                 });
 
                 if (!response.ok) {
@@ -435,12 +423,12 @@
 
                 const result = await response.json();
                 
-                if (result.status === 'success') {
+                if (result.error) {
+                    displayError(result.error);
+                } else {
                     bulkProcessingResults = result;
                     displayBulkResults(result);
                     downloadBtn.disabled = false;
-                } else {
-                    displayError(result.error || 'Bulk processing failed');
                 }
                 
             } catch (error) {

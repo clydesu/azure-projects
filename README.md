@@ -1,35 +1,82 @@
 # Azure AI Projects Portfolio
 
-Showcasing AI-powered applications built with Azure Cognitive Services.
+Showcasing AI-powered applications built with Azure Cognitive Services and deployed via GitHub Actions.
 
-## Projects
+## 🚀 Live Demo
 
-- **Smart Receipt Tracker** - Receipt processing application
-  - Location: `smart-receipt-tracker/`
-  - See folder README for details
+**[clydejuan-azure-projects.azurewebsites.net](https://clydejuan-azure-projects.azurewebsites.net)**
 
-- **Blog Summarizer** - AI-powered content summarization
-  - Location: `blog-summarizer/`
-  - See folder README for details
+## 🧾 Smart Receipt Tracker - Featured Project
 
-- **Meeting Analyst** - Meeting transcription and analysis
-  - Location: `meeting-analyst/`
-  - See folder README for details
+Professional receipt processing application powered by **Azure Document Intelligence**. 
 
-- **Serverless Chatbot** - AI chatbot with natural language processing
-  - Location: `serverless-chatbot/`
-  - See folder README for details
+### Features
+- **Real Azure Integration**: Uses Azure Document Intelligence API for production-grade OCR
+- **Multiple File Support**: Process single receipts or bulk upload up to 10 receipts
+- **Structured Data Extraction**: Automatically extracts merchant names, totals, dates, and itemized purchases
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Error Handling**: Robust error handling with user-friendly messages
 
-- **Image Captioning App** - AI-powered image description generator
-  - Location: `image-captioning-app/`
-  - See folder README for details
+### Technology Stack
+- **Backend**: Flask (Python)
+- **AI Service**: Azure Document Intelligence (prebuilt-receipt model)
+- **Authentication**: Azure Key Credential + DefaultAzureCredential support
+- **Deployment**: Azure App Service via GitHub Actions
+- **Frontend**: Vanilla JavaScript with modern UI
 
-## Live Demo
+### Environment Variables Required
+```
+DOCUMENT_INTELLIGENCE_ENDPOINT=https://your-resource.cognitiveservices.azure.com/
+DOCUMENT_INTELLIGENCE_KEY=your-api-key
+```
 
-[clydejuan-azure-projects.azurewebsites.net](https://clydejuan-azure-projects.azurewebsites.net)
+## 📁 Other Projects
 
-## Contact
+- **Blog Summarizer** - AI-powered content summarization (`blog-summarizer/`)
+- **Meeting Analyst** - Meeting transcription and analysis (`meeting-analyst/`)
+- **Serverless Chatbot** - AI chatbot with NLP (`serverless-chatbot/`)
+- **Image Captioning App** - AI-powered image descriptions (`image-captioning-app/`)
+
+## 🛠️ Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/clydesu/azure-projects.git
+   cd azure-projects
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your Azure Document Intelligence credentials
+   ```
+
+4. **Test Document Intelligence integration**
+   ```bash
+   python test_document_intelligence.py
+   ```
+
+5. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+## 🚀 Deployment
+
+The application is automatically deployed to Azure App Service via GitHub Actions when changes are pushed to the main branch.
+
+### Required Azure App Service Settings
+- `DOCUMENT_INTELLIGENCE_ENDPOINT`
+- `DOCUMENT_INTELLIGENCE_KEY`
+
+## 📧 Contact
 
 **Portfolio**: [clydejuan.me](https://clydejuan.me)  
 **LinkedIn**: [linkedin.com/in/clydesu](https://linkedin.com/in/clydesu)  
-**Email**: clydezjuan@gmail.com
+**Email**: clydezjuan@gmail.com  
+**GitHub**: [github.com/clydesu/azure-projects](https://github.com/clydesu/azure-projects)
