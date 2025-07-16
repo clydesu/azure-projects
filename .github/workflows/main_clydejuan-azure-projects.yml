@@ -27,6 +27,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/" # Portfolio root
+          api_location: "" # No API for static portfolio
           output_location: "" # No build output needed for static files
 
   close_pull_request_job:
