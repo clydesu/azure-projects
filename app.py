@@ -684,6 +684,25 @@ def portfolio():
 def smart_receipt_tracker():
     return render_template_string(smart_receipt_template)
 
+@app.route('/api/test_connection', methods=['GET'])
+def test_connection():
+    """Test the Document Intelligence service connection"""
+    try:
+        from smart_receipt_processor import test_document_intelligence_connection
+        result = test_document_intelligence_connection()
+        response = jsonify(result)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+    except Exception as e:
+        logger.error(f"Error testing connection: {e}")
+        response = jsonify({
+            "success": False,
+            "error": f"Failed to test connection: {str(e)}",
+            "endpoint": os.environ.get("DOCUMENT_INTELLIGENCE_ENDPOINT", "NOT SET")
+        })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
+
 @app.route('/api/process_receipt', methods=['POST', 'OPTIONS'])
 def process_receipt():
     if request.method == 'OPTIONS':
