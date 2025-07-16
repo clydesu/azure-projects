@@ -454,13 +454,13 @@ smart_receipt_template = """
         // File input event listeners
         fileInput.addEventListener('change', function() {
             processBtn.disabled = !this.files.length;
-            processBtn.innerHTML = this.files.length ? `Process $${this.files[0].name}` : 'Process Receipt';
+            processBtn.innerHTML = this.files.length ? `Process ${this.files[0].name}` : 'Process Receipt';
         });
 
         multipleFileInput.addEventListener('change', function() {
             const files = this.files;
             processBulkBtn.disabled = !files.length;
-            processBulkBtn.innerHTML = files.length ? `Process $${files.length} Receipts` : 'Process All Receipts';
+            processBulkBtn.innerHTML = files.length ? `Process ${files.length} Receipts` : 'Process All Receipts';
             
             // Display selected files
             displayFileList(files);

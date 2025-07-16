@@ -7,6 +7,7 @@ import os
 import logging
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
+from io import BytesIO
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -32,9 +33,11 @@ def process_receipt_image(image_data: bytes, filename: str = "receipt.jpg"):
         client = create_document_intelligence_client()
         
         logger.info("Sending request to Document Intelligence service")
+        
         poller = client.begin_analyze_document(
             model_id="prebuilt-receipt",
-            analyze_request=image_data
+            body=image_data,
+            content_type="application/octet-stream"
         )
         
         logger.info("Waiting for analysis results")
