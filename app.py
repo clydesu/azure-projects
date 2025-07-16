@@ -14,10 +14,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'smart-receipt-tracker')
 
 try:
     from smart_receipt_processor import process_receipt_image, process_multiple_receipts
-    DOCUMENT_INTELLIGENCE_AVAILABLE = True
     logger.info("Document Intelligence service imported successfully")
 except ImportError as e:
-    DOCUMENT_INTELLIGENCE_AVAILABLE = False
     logger.warning(f"Document Intelligence service not available: {e}")
 
 # Document Intelligence endpoints with real Azure integration
@@ -30,13 +28,7 @@ def process_receipt():
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response
     
-    if not DOCUMENT_INTELLIGENCE_AVAILABLE:
-        response = jsonify({"error": "Document Intelligence service not available"})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response, 503
-    
     try:
-        # Get image data from request
         if 'file' not in request.files:
             return jsonify({"error": "No file provided"}), 400
         
@@ -44,22 +36,8 @@ def process_receipt():
         if file.filename == '':
             return jsonify({"error": "No file selected"}), 400
         
-        # Validate file type
-        allowed_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.pdf'}
-        file_ext = os.path.splitext(file.filename)[1].lower()
-        if file_ext not in allowed_extensions:
-            return jsonify({"error": "Unsupported file type. Please use JPG, PNG, BMP, TIFF, or PDF"}), 400
-        
-        # Read file data
+        # Read and process file
         image_data = file.read()
-        
-        # Validate file size (max 50MB for Document Intelligence)
-        if len(image_data) > 50 * 1024 * 1024:
-            return jsonify({"error": "File too large. Maximum size is 50MB"}), 400
-        
-        logger.info(f"Processing receipt upload: {file.filename}, size: {len(image_data)} bytes")
-        
-        # Process with Document Intelligence
         result = process_receipt_image(image_data, file.filename)
         
         response = jsonify(result)
@@ -81,13 +59,7 @@ def process_multiple():
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response
     
-    if not DOCUMENT_INTELLIGENCE_AVAILABLE:
-        response = jsonify({"error": "Document Intelligence service not available"})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response, 503
-    
     try:
-        # Get multiple files from request
         if 'files' not in request.files:
             return jsonify({"error": "No files provided"}), 400
         
@@ -95,42 +67,16 @@ def process_multiple():
         if not files or all(f.filename == '' for f in files):
             return jsonify({"error": "No files selected"}), 400
         
-        # Validate file count (limit to 10 files)
-        if len(files) > 10:
-            return jsonify({"error": "Maximum 10 files allowed per request"}), 400
-        
         # Prepare images data for processing
         images_data = []
-        allowed_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.pdf'}
-        
         for file in files:
             if file.filename == '':
                 continue
-                
-            file_ext = os.path.splitext(file.filename)[1].lower()
-            if file_ext not in allowed_extensions:
-                images_data.append({
-                    'filename': file.filename,
-                    'error': f"Unsupported file type: {file_ext}"
-                })
-                continue
-            
-            image_data = file.read()
-            if len(image_data) > 50 * 1024 * 1024:
-                images_data.append({
-                    'filename': file.filename,
-                    'error': "File too large (max 50MB)"
-                })
-                continue
-            
             images_data.append({
                 'filename': file.filename,
-                'data': image_data
+                'data': file.read()
             })
         
-        logger.info(f"Processing {len(images_data)} receipt uploads")
-        
-        # Process with Document Intelligence
         result = process_multiple_receipts(images_data)
         
         response = jsonify(result)
@@ -175,88 +121,134 @@ portfolio_template = """
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-20px); }
         }
         
         .header h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 0.5rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 1rem;
+        }
+        
+        .header .subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
         }
         
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 4rem;
         }
         
         .project-card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: linear-gradient(145deg, #ffffff, #f8f9ff);
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
         }
         
         .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.25);
         }
         
         .project-card h3 {
-            color: #667eea;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 1rem;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 700;
         }
         
         .project-card p {
-            margin-bottom: 1.5rem;
-            color: #666;
+            margin-bottom: 2rem;
+            color: #555;
+            line-height: 1.6;
+            font-size: 1rem;
         }
         
         .project-link {
             display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-        
-        .project-link:hover {
-            background: #5a6fd8;
-        }
-        
-        .demo-section {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .demo-link {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             padding: 1rem 2rem;
             text-decoration: none;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
             transition: all 0.3s ease;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
         }
         
-        .demo-link:hover {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.6);
+        .project-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .project-link:hover::before {
+            left: 100%;
+        }
+        
+        .project-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
         
         .contact {
@@ -293,47 +285,41 @@ portfolio_template = """
 <body>
     <div class="container">
         <header class="header">
-            <h1>Azure AI Projects Portfolio</h1>
-            <p>Showcasing AI-powered applications built with Azure Cognitive Services</p>
-            <p><small>Deployed via GitHub Actions 🚀</small></p>
+            <h1>✨ Azure AI Projects Portfolio</h1>
+            <p>Cutting-edge AI solutions powered by Microsoft Azure</p>
+            <p class="subtitle">🚀 Production-ready • 🎯 Real-world applications • � Modern tech stack</p>
         </header>
         
         <div class="projects-grid">
             <div class="project-card">
                 <h3>🧾 Smart Receipt Tracker</h3>
-                <p>Professional receipt processing application powered by Azure Document Intelligence. Automatically extracts merchant information, amounts, dates, and itemized purchases from receipt images with high accuracy OCR technology.</p>
-                <a href="/smart-receipt-tracker" class="project-link">View Project</a>
+                <p>Intelligent expense management with Azure Document Intelligence. Upload receipts, extract data automatically, and categorize expenses with AI-powered analysis. Includes bulk processing and CSV export.</p>
+                <a href="/smart-receipt-tracker" class="project-link">✨ Try Live Demo</a>
             </div>
             
             <div class="project-card">
                 <h3>📝 Blog Summarizer</h3>
-                <p>AI-powered content summarization tool that uses Azure Cognitive Services to create concise summaries of blog posts and articles.</p>
-                <a href="/blog-summarizer" class="project-link">View Project</a>
+                <p>Transform lengthy articles into concise, actionable summaries using Azure Cognitive Services. Perfect for content creators and researchers who need quick insights.</p>
+                <a href="/blog-summarizer" class="project-link">📖 Explore</a>
             </div>
             
             <div class="project-card">
                 <h3>🎙️ Meeting Analyst</h3>
-                <p>Meeting transcription and analysis application that converts speech to text and provides insights using Azure Speech Services.</p>
-                <a href="/meeting-analyst" class="project-link">View Project</a>
+                <p>Convert meetings into structured insights with Azure Speech-to-Text. Automatically transcribe, analyze sentiment, and extract key action items from recordings.</p>
+                <a href="/meeting-analyst" class="project-link">🎯 Discover</a>
             </div>
             
             <div class="project-card">
                 <h3>🤖 Serverless Chatbot</h3>
-                <p>AI chatbot with natural language processing capabilities built using Azure Bot Framework and Language Understanding.</p>
-                <a href="/serverless-chatbot" class="project-link">View Project</a>
+                <p>Intelligent conversational AI built with Azure Bot Framework. Natural language understanding, context-aware responses, and seamless integration with Azure services.</p>
+                <a href="/serverless-chatbot" class="project-link">🤖 Chat Now</a>
             </div>
             
             <div class="project-card">
                 <h3>📸 Image Captioning App</h3>
-                <p>AI-powered image description generator that uses Azure Computer Vision to automatically generate captions for uploaded images.</p>
-                <a href="/image-captioning-app" class="project-link">View Project</a>
+                <p>Automatically generate descriptive captions for images using Azure Computer Vision. Perfect for accessibility, content creation, and image analysis workflows.</p>
+                <a href="/image-captioning-app" class="project-link">📸 Try It</a>
             </div>
-        </div>
-        
-        <div class="demo-section">
-            <h2 style="color: white; margin-bottom: 1rem;">🚀 Live Demo</h2>
-            <p style="color: white; margin-bottom: 1.5rem;">Experience the Smart Receipt Tracker in action</p>
-            <a href="/smart-receipt-tracker" class="demo-link">Try Smart Receipt Tracker</a>
         </div>
         
         <footer class="contact">
@@ -350,13 +336,243 @@ portfolio_template = """
 </html>
 """
 
+# Smart Receipt Tracker template with back button
+smart_receipt_template = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Receipt Tracker - Azure AI Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .back-button {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) translateX(-3px);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .demo-note {
+            background: linear-gradient(45deg, #fff3cd, #fff8e1);
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 1.2em;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(145deg, #f8fff8, #ffffff);
+            border-radius: 12px;
+            border-left: 5px solid #4caf50;
+        }
+        
+        .file-input { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-button">← Back to Portfolio</a>
+            <h1>🧾 Smart Receipt Tracker</h1>
+            <p>AI-Powered Receipt Processing with Azure Document Intelligence</p>
+        </div>
+        
+        <div class="content">
+            <div class="demo-note">
+                <strong>🚀 Live Azure Integration:</strong> This application uses real Azure Document Intelligence for professional OCR processing. Upload your receipts to see AI in action!
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <input type="file" id="receiptFile" class="file-input" accept="image/*,.pdf">
+                <button onclick="document.getElementById('receiptFile').click()" class="upload-btn">
+                    📁 Choose Receipt File
+                </button>
+                <button onclick="processReceipt()" class="upload-btn" id="processBtn" disabled>
+                    🤖 Process with Azure AI
+                </button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <p>🤖 Azure AI is analyzing your receipt...</p>
+            </div>
+            
+            <div class="results" id="results">
+                <h3>📊 Extracted Information</h3>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('receiptFile');
+        const processBtn = document.getElementById('processBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const resultContent = document.getElementById('resultContent');
+
+        fileInput.addEventListener('change', function() {
+            processBtn.disabled = !this.files.length;
+            processBtn.innerHTML = this.files.length ? `🤖 Process \${this.files[0].name}` : '🤖 Process with Azure AI';
+        });
+
+        async function processReceipt() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            processBtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/api/process_receipt', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    displayError(result.error);
+                } else {
+                    displayResults(result);
+                }
+                
+            } catch (error) {
+                displayError('Network error: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                processBtn.disabled = false;
+            }
+        }
+
+        function displayResults(data) {
+            results.style.display = 'block';
+            resultContent.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">📄 Receipt Analysis Results</h4>
+                    <p><strong>🏪 Merchant:</strong> \${data.merchant_name || 'Not detected'}</p>
+                    <p><strong>💰 Total Amount:</strong> $\${data.total || '0.00'}</p>
+                    <p><strong>📅 Date:</strong> \${data.date || 'Not detected'}</p>
+                    <p><strong>✅ AI Confidence:</strong> \${((data.confidence || 0) * 100).toFixed(1)}%</p>
+                    \${data.items && data.items.length > 0 ? 
+                        '<p><strong>🛍️ Items:</strong> ' + data.items.map(item => item.description || 'Item').join(', ') + '</p>' 
+                        : ''
+                    }
+                </div>
+            `;
+        }
+
+        function displayError(error) {
+            results.style.display = 'block';
+            results.style.borderLeftColor = '#f44336';
+            resultContent.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 8px;">
+                    <h4 style="color: #f44336;">❌ Processing Error</h4>
+                    <p>\${error}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
+"""
+
 @app.route('/')
 def home():
     return render_template_string(portfolio_template)
 
 @app.route('/smart-receipt-tracker')
 def smart_receipt_tracker():
-    return send_from_directory('smart-receipt-tracker', 'index.html')
+    return render_template_string(smart_receipt_template)
 
 @app.route('/blog-summarizer')
 def blog_summarizer():
