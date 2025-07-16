@@ -1,0 +1,10 @@
+# Azure Developer CLI (azd) configuration file
+name: azure-projects-portfolio
+metadata:
+  template: azure-projects-portfolio@0.0.1-beta
+
+services:
+  portfolio-website:
+    project: .
+    language: js
+    host: appservice
