@@ -429,6 +429,7 @@ smart_receipt_template = """
                     </button>
                     <div id="fileList" style="margin-top: 15px;"></div>
                 </div>
+            </div>
             
             <div class="loading" id="loading">
                 <p>Azure AI is analyzing your receipt...</p>
@@ -645,7 +646,7 @@ smart_receipt_template = """
                 });
                 totalDisplay = amounts.join(' and ');
             }
-
+            
             let html = `
                 <div style="background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
                     <h4 style="margin: 0 0 5px 0; font-size: 1.1rem;">Total Amount: ${totalDisplay}</h4>
@@ -765,33 +766,33 @@ def process_receipt():
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response
-
+    
     try:
         if 'file' not in request.files:
             return jsonify({"error": "No file provided"}), 400
-
+        
         file = request.files['file']
         if file.filename == '':
             return jsonify({"error": "No file selected"}), 400
-
+        
         # Read and process file
         image_data = file.read()
         result = process_receipt_image(image_data, file.filename)
-
+        
         # Debug: log what we're sending to frontend
         logger.info(f"Sending to frontend: {result}")
-
+        
         response = jsonify(result)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
-
+        
     except Exception as e:
         logger.error(f"Error processing receipt: {e}")
         response = jsonify({"error": "An unexpected error occurred"})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 500
 
-@app.route('/api/process_multiple', methods=['POST', 'OPTIONS'])
+@app.route('/api/process_multiple', methods=['POST', 'OPTIONS'])  
 def process_multiple():
     if request.method == 'OPTIONS':
         response = jsonify({})
@@ -799,15 +800,15 @@ def process_multiple():
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
         return response
-
+    
     try:
         if 'files' not in request.files:
             return jsonify({"error": "No files provided"}), 400
-
+        
         files = request.files.getlist('files')
         if not files or all(f.filename == '' for f in files):
             return jsonify({"error": "No files selected"}), 400
-
+        
         # Prepare images data for processing
         images_data = []
         for file in files:
@@ -817,18 +818,19 @@ def process_multiple():
                 'filename': file.filename,
                 'data': file.read()
             })
-
+        
         result = process_multiple_receipts(images_data)
-
+        
         response = jsonify(result)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
-
+        
     except Exception as e:
         logger.error(f"Error processing multiple receipts: {e}")
         response = jsonify({"error": "An unexpected error occurred"})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 500
+
 @app.route('/blog-summarizer')
 def blog_summarizer():
     return send_from_directory('blog-summarizer', 'README.md')
