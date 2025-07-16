@@ -604,6 +604,7 @@ smart_receipt_template = """
             });
             
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             // Format the total amounts display
             let totalDisplay = '';
@@ -621,6 +622,8 @@ smart_receipt_template = """
             }
             
 >>>>>>> parent of ed5435f (added reset button)
+=======
+>>>>>>> parent of b02bac1 (Clean up project and remove unnecessary files)
             let html = `
                 <div style="background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
                     <h3>Total Amount: $${totalAmount.toFixed(2)}</h3>
