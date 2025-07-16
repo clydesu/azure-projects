@@ -223,7 +223,7 @@ portfolio_template = """
             <div class="project-card">
                 <h3>Smart Receipt Tracker</h3>
                 <p>Intelligent expense management with Azure Document Intelligence. Upload receipts, extract data automatically, and categorize expenses with AI-powered analysis. Includes bulk processing and CSV export.</p>
-                <a href="/smart-receipt-tracker" class="project-link">Try Live Demo</a>
+                <a href="/smart-receipt-tracker" class="project-link">Try Live App</a>
             </div>
             
             <div class="project-card">
@@ -272,7 +272,7 @@ smart_receipt_template = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Receipt Tracker - Azure AI Demo</title>
+    <title>Smart Receipt Tracker - Azure AI</title>
     <style>
         * {
             margin: 0;
@@ -329,7 +329,7 @@ smart_receipt_template = """
             padding: 40px;
         }
         
-        .demo-note {
+        .info-note {
             background: linear-gradient(45deg, #fff3cd, #fff8e1);
             border: 1px solid #ffeaa7;
             border-radius: 10px;
@@ -393,7 +393,7 @@ smart_receipt_template = """
         </div>
         
         <div class="content">
-            <div class="demo-note">
+            <div class="info-note">
                 <strong>Live Azure Integration:</strong> This application uses real Azure Document Intelligence for professional OCR processing. Upload your receipts to see AI in action!
             </div>
             
@@ -478,8 +478,8 @@ smart_receipt_template = """
                 const fileItem = document.createElement('div');
                 fileItem.style.cssText = 'padding: 8px 12px; margin: 5px 0; background: white; border: 1px solid #ddd; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;';
                 fileItem.innerHTML = `
-                    <span style="font-weight: 500;">$${file.name}</span>
-                    <span style="color: #666; font-size: 0.8em;">$${formatFileSize(file.size)}</span>
+                    <span style="font-weight: 500;">${file.name}</span>
+                    <span style="color: #666; font-size: 0.8em;">${formatFileSize(file.size)}</span>
                 `;
                 listDiv.appendChild(fileItem);
             }
@@ -569,20 +569,20 @@ smart_receipt_template = """
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <div style="background: #f8f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
                             <strong style="color: #495057;">Merchant</strong><br>
-                            <span style="font-size: 1.1rem;">$${data.merchant_name || 'Not detected'}</span>
+                            <span style="font-size: 1.1rem;">${data.merchant_name || 'Not detected'}</span>
                         </div>
                         <div style="background: #f8f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
                             <strong style="color: #495057;">Total</strong><br>
-                            <span style="font-size: 1.1rem; font-weight: bold;">$$${data.total || '0.00'}</span>
+                            <span style="font-size: 1.1rem; font-weight: bold;">$${data.total || '0.00'}</span>
                         </div>
                         <div style="background: #f8f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8;">
                             <strong style="color: #495057;">Date</strong><br>
-                            <span style="font-size: 1.1rem;">$${data.date || 'Not detected'}</span>
+                            <span style="font-size: 1.1rem;">${data.date || 'Not detected'}</span>
                         </div>
                     </div>
-                    $${data.items && data.items.length > 0 ? 
+                    ${data.items && data.items.length > 0 ? 
                         '<div style="margin-top: 20px;"><h5 style="color: #495057; margin-bottom: 10px;">Items:</h5>' + 
-                        data.items.map(item => `<div style="background: #e9ecef; padding: 10px; margin: 5px 0; border-radius: 5px;">$${item.description || 'Item'} - $${item.total_price || 'N/A'}</div>`).join('') + 
+                        data.items.map(item => `<div style="background: #e9ecef; padding: 10px; margin: 5px 0; border-radius: 5px;">${item.description || 'Item'} - $${item.total_price || 'N/A'}</div>`).join('') + 
                         '</div>' : ''
                     }
                 </div>
@@ -605,8 +605,8 @@ smart_receipt_template = """
             
             let html = `
                 <div style="background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
-                    <h3>Total Amount: $$${totalAmount.toFixed(2)}</h3>
-                    <p>Successfully processed: $${successCount} out of $${data.results.length} receipts</p>
+                    <h3>Total Amount: $${totalAmount.toFixed(2)}</h3>
+                    <p>Successfully processed: ${successCount} out of ${data.results.length} receipts</p>
                 </div>
             `;
             
@@ -615,16 +615,16 @@ smart_receipt_template = """
                 const statusIcon = receipt.success ? 'Success' : 'Error';
                 
                 html += `
-                    <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid $${statusColor}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <h5 style="color: #495057; margin-bottom: 10px;">$${statusIcon} - Receipt $${index + 1}: $${receipt.filename}</h5>
-                        $${receipt.success ? `
+                    <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid ${statusColor}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h5 style="color: #495057; margin-bottom: 10px;">${statusIcon} - Receipt ${index + 1}: ${receipt.filename}</h5>
+                        ${receipt.success ? `
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
-                                <div><strong>Merchant:</strong> $${receipt.merchant_name || 'Not detected'}</div>
-                                <div><strong>Total:</strong> $$${receipt.total || '0.00'}</div>
-                                <div><strong>Date:</strong> $${receipt.date || 'Not detected'}</div>
+                                <div><strong>Merchant:</strong> ${receipt.merchant_name || 'Not detected'}</div>
+                                <div><strong>Total:</strong> $${receipt.total || '0.00'}</div>
+                                <div><strong>Date:</strong> ${receipt.date || 'Not detected'}</div>
                             </div>
                         ` : `
-                            <p style="color: #dc3545;"><strong>Error:</strong> $${receipt.error}</p>
+                            <p style="color: #dc3545;"><strong>Error:</strong> ${receipt.error}</p>
                         `}
                     </div>
                 `;
@@ -639,7 +639,7 @@ smart_receipt_template = """
             resultContent.innerHTML = `
                 <div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; border: 1px solid #f5c6cb;">
                     <h4>Processing Error</h4>
-                    <p>$${error}</p>
+                    <p>${error}</p>
                 </div>
             `;
         }
@@ -683,25 +683,6 @@ def portfolio():
 @app.route('/smart-receipt-tracker')
 def smart_receipt_tracker():
     return render_template_string(smart_receipt_template)
-
-@app.route('/api/test_connection', methods=['GET'])
-def test_connection():
-    """Test the Document Intelligence service connection"""
-    try:
-        from smart_receipt_processor import test_document_intelligence_connection
-        result = test_document_intelligence_connection()
-        response = jsonify(result)
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
-    except Exception as e:
-        logger.error(f"Error testing connection: {e}")
-        response = jsonify({
-            "success": False,
-            "error": f"Failed to test connection: {str(e)}",
-            "endpoint": os.environ.get("DOCUMENT_INTELLIGENCE_ENDPOINT", "NOT SET")
-        })
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response, 500
 
 @app.route('/api/process_receipt', methods=['POST', 'OPTIONS'])
 def process_receipt():
