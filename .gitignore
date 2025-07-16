@@ -69,3 +69,5 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Legacy folders - removed, now part of main project structure

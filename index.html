@@ -3,152 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azure Projects - Clyde Juan</title>
+    <title>Azure AI Projects Portfolio - Clyde Juan</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
-        header {
-            background: linear-gradient(135deg, #0078d4, #106ebe);
+        
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
+            padding: 40px;
             text-align: center;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
         }
-        h1 {
-            margin: 0;
-            font-size: 2.5rem;
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
         }
-        .subtitle {
-            margin: 0.5rem 0 0 0;
-            font-size: 1.2rem;
+        
+        .header p {
+            font-size: 1.2em;
             opacity: 0.9;
+            margin-bottom: 20px;
         }
+        
+        .tech-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .tech-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            backdrop-filter: blur(10px);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
         }
+        
         .project-card {
             background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #f0f0f0;
         }
+        
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        .project-card h3 {
-            color: #0078d4;
-            margin-top: 0;
+        
+        .project-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
         }
-        .btn {
-            display: inline-block;
-            background: #0078d4;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-top: 1rem;
-            transition: background 0.3s ease;
-        }
-        .btn:hover {
-            background: #106ebe;
-        }
-        .status {
-            display: inline-block;
-            background: #ffc107;
-            color: #000;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
+        
+        .project-title {
+            font-size: 1.4em;
             font-weight: bold;
-            margin-top: 0.5rem;
+            color: #333;
+            margin-bottom: 10px;
         }
-        footer {
-            text-align: center;
-            margin-top: 3rem;
-            padding: 2rem 0;
-            border-top: 1px solid #ddd;
+        
+        .project-description {
             color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .tech-tag {
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            border: 1px solid #e9ecef;
+        }
+        
+        .project-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+        
+        .status-live {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-demo {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-development {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .intro-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Azure Projects Portfolio</h1>
-            <p class="subtitle">Showcasing hands-on experience with Microsoft Azure AI services</p>
-        </div>
-    </header>
-
     <div class="container">
-        <div class="projects-grid">
-            <div class="project-card">
-                <h3>Smart Receipt Tracker</h3>
-                <p>AI-powered receipt analysis using Azure Cognitive Services. Upload receipts and extract merchant, total, date, and items automatically using Azure free tier.</p>
-                <div class="status" style="background: #28a745; color: white;">Live Demo</div>
-                <br>
-                <a href="smart-receipt-tracker/" class="btn">View Project</a>
-            </div>
-
-            <div class="project-card">
-                <h3>Resume Screener Bot</h3>
-                <p>Intelligent resume analysis using Azure AI Document Intelligence and OpenAI. Automatically extracts skills, experience, and provides candidate scoring.</p>
-                <div class="status">Coming Soon</div>
-                <br>
-                <a href="/resume-screener" class="btn">View Project</a>
-            </div>
-
-            <div class="project-card">
-                <h3>Blog Summarizer</h3>
-                <p>Automatic blog content summarization powered by Azure OpenAI. Extract key insights and generate concise summaries from lengthy articles.</p>
-                <div class="status">Coming Soon</div>
-                <br>
-                <a href="/blog-summarizer" class="btn">View Project</a>
-            </div>
-
-            <div class="project-card">
-                <h3>Meeting Analyst</h3>
-                <p>Meeting transcription and analysis using Azure Speech-to-Text and OpenAI. Generate actionable insights and summaries from recorded meetings.</p>
-                <div class="status">Coming Soon</div>
-                <br>
-                <a href="/meeting-analyst" class="btn">View Project</a>
-            </div>
-
-            <div class="project-card">
-                <h3>Serverless Chatbot</h3>
-                <p>Scalable conversational AI built with Azure Functions and OpenAI. Demonstrates serverless architecture and cost-effective AI deployment.</p>
-                <div class="status">Coming Soon</div>
-                <br>
-                <a href="/serverless-chatbot" class="btn">View Project</a>
-            </div>
-
-            <div class="project-card">
-                <h3>Image Captioning App</h3>
-                <p>Automatic image description generation using Azure Computer Vision. Upload images and get detailed, contextual captions powered by AI.</p>
-                <div class="status">Coming Soon</div>
-                <br>
-                <a href="/image-captioning" class="btn">View Project</a>
+        <div class="header">
+            <h1>☁️ Azure AI Projects Portfolio</h1>
+            <p>Hands-on Azure Cloud & AI Development Experience</p>
+            <p><strong>Clyde Juan</strong> - Full Stack Developer</p>
+            <div class="tech-badges">
+                <span class="tech-badge">Azure Document Intelligence</span>
+                <span class="tech-badge">Azure OpenAI</span>
+                <span class="tech-badge">Azure Computer Vision</span>
+                <span class="tech-badge">Azure Static Web Apps</span>
+                <span class="tech-badge">GitHub Actions CI/CD</span>
+                <span class="tech-badge">Python</span>
+                <span class="tech-badge">JavaScript</span>
             </div>
         </div>
-
-        <footer>
-            <p>&copy; 2025 Clyde Juan - Azure Cloud Projects Portfolio</p>
-            <p>Built with Flask and deployed on Azure App Service</p>
-        </footer>
+        
+        <div class="content">
+            <div class="intro-section">
+                <h2>� Portfolio Overview</h2>
+                <p>Welcome to my Azure AI projects portfolio! This collection demonstrates hands-on experience with Azure Cognitive Services, serverless computing, and modern web development practices. Each project showcases different aspects of cloud-native application development.</p>
+            </div>
+            
+            <div class="projects-grid">
+                <!-- Smart Receipt Tracker -->
+                <div class="project-card" style="position: relative;">
+                    <div class="status-badge status-live">✅ Live</div>
+                    <div class="project-icon">🧾</div>
+                    <div class="project-title">Smart Receipt Tracker</div>
+                    <div class="project-description">
+                        AI-powered receipt processing using Azure Document Intelligence. Upload receipt images and automatically extract merchant information, totals, dates, and itemized purchases with bulk processing capabilities.
+                    </div>
+                    <div class="project-tech">
+                        <span class="tech-tag">Azure Document Intelligence</span>
+                        <span class="tech-tag">Azure Static Web Apps</span>
+                        <span class="tech-tag">Python Functions</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+                    <div class="project-buttons">
+                        <a href="smart-receipt-tracker/" class="btn btn-primary">🚀 Launch App</a>
+                        <a href="https://github.com/clydesu/azure-projects/tree/main/smart-receipt-tracker" class="btn btn-secondary">📄 View Code</a>
+                    </div>
+                </div>
+                
+                <!-- Blog Summarizer -->
+                <div class="project-card" style="position: relative;">
+                    <div class="status-badge status-development">🔧 In Development</div>
+                    <div class="project-icon">📝</div>
+                    <div class="project-title">Blog Summarizer</div>
+                    <div class="project-description">
+                        Intelligent blog content summarization using Azure OpenAI. Input blog URLs or text content to generate concise summaries, key points, and sentiment analysis.
+                    </div>
+                    <div class="project-tech">
+                        <span class="tech-tag">Azure OpenAI</span>
+                        <span class="tech-tag">GPT-4</span>
+                        <span class="tech-tag">Azure Functions</span>
+                        <span class="tech-tag">React</span>
+                    </div>
+                    <div class="project-buttons">
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">🚧 Coming Soon</a>
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">📄 View Code</a>
+                    </div>
+                </div>
+                
+                <!-- Meeting Analyst -->
+                <div class="project-card" style="position: relative;">
+                    <div class="status-badge status-development">🔧 In Development</div>
+                    <div class="project-icon">🎯</div>
+                    <div class="project-title">Meeting Analyst</div>
+                    <div class="project-description">
+                        Transform meeting recordings into actionable insights. Uses Azure Speech Services and OpenAI to transcribe, summarize, and extract action items from meeting audio.
+                    </div>
+                    <div class="project-tech">
+                        <span class="tech-tag">Azure Speech Services</span>
+                        <span class="tech-tag">Azure OpenAI</span>
+                        <span class="tech-tag">Audio Processing</span>
+                        <span class="tech-tag">Vue.js</span>
+                    </div>
+                    <div class="project-buttons">
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">🚧 Coming Soon</a>
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">📄 View Code</a>
+                    </div>
+                </div>
+                
+                <!-- Serverless Chatbot -->
+                <div class="project-card" style="position: relative;">
+                    <div class="status-badge status-development">🔧 In Development</div>
+                    <div class="project-icon">🤖</div>
+                    <div class="project-title">Serverless Chatbot</div>
+                    <div class="project-description">
+                        Intelligent conversational AI powered by Azure OpenAI and deployed on Azure Container Apps. Features context-aware responses and integration with Azure Cosmos DB for conversation history.
+                    </div>
+                    <div class="project-tech">
+                        <span class="tech-tag">Azure OpenAI</span>
+                        <span class="tech-tag">Azure Container Apps</span>
+                        <span class="tech-tag">Cosmos DB</span>
+                        <span class="tech-tag">FastAPI</span>
+                    </div>
+                    <div class="project-buttons">
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">🚧 Coming Soon</a>
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">📄 View Code</a>
+                    </div>
+                </div>
+                
+                <!-- Image Captioning App -->
+                <div class="project-card" style="position: relative;">
+                    <div class="status-badge status-development">🔧 In Development</div>
+                    <div class="project-icon">📸</div>
+                    <div class="project-title">Image Captioning App</div>
+                    <div class="project-description">
+                        Automatic image description generation using Azure Computer Vision. Upload images to receive detailed captions, object detection, and accessibility descriptions.
+                    </div>
+                    <div class="project-tech">
+                        <span class="tech-tag">Azure Computer Vision</span>
+                        <span class="tech-tag">Azure Storage</span>
+                        <span class="tech-tag">Image Processing</span>
+                        <span class="tech-tag">Angular</span>
+                    </div>
+                    <div class="project-buttons">
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">🚧 Coming Soon</a>
+                        <a href="#" class="btn btn-secondary" onclick="alert('Coming Soon!')">📄 View Code</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3>🎯 Portfolio Highlights</h3>
+            <p><strong>Demonstrates:</strong> Azure Cognitive Services Integration • Serverless Architecture • CI/CD Pipelines • Modern Web Development</p>
+            <p><strong>Technologies:</strong> Azure Document Intelligence, OpenAI, Computer Vision, Static Web Apps, Functions, Container Apps</p>
+            <br>
+            <p>🔗 <strong>GitHub Repository:</strong> <a href="https://github.com/clydesu/azure-projects" target="_blank">github.com/clydesu/azure-projects</a></p>
+            <p>📧 <strong>Contact:</strong> Available for opportunities and collaboration</p>
+        </div>
     </div>
 </body>
 </html>
