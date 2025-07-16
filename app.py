@@ -155,6 +155,7 @@ portfolio_template = """
         <header class="header">
             <h1>Azure AI Projects Portfolio</h1>
             <p>Showcasing AI-powered applications built with Azure Cognitive Services</p>
+            <p><small>Deployed via GitHub Actions 🚀</small></p>
         </header>
         
         <div class="projects-grid">
