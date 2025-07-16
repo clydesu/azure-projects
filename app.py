@@ -603,6 +603,24 @@ smart_receipt_template = """
                 }
             });
             
+<<<<<<< HEAD
+=======
+            // Format the total amounts display
+            let totalDisplay = '';
+            if (Object.keys(totalAmounts).length === 0) {
+                totalDisplay = '$0.00';
+            } else {
+                const amounts = Object.entries(totalAmounts).map(([currency, amount]) => {
+                    if (currency === 'USD') {
+                        return `$${amount.toFixed(2)}`;
+                    } else {
+                        return `${currency} ${amount.toFixed(2)}`;
+                    }
+                });
+                totalDisplay = amounts.join(' and ');
+            }
+            
+>>>>>>> parent of ed5435f (added reset button)
             let html = `
                 <div style="background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
                     <h3>Total Amount: $${totalAmount.toFixed(2)}</h3>
