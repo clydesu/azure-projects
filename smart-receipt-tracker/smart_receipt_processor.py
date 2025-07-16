@@ -4,11 +4,9 @@ Clean, focused receipt processing using Azure Document Intelligence
 """
 
 import os
-import base64
 import logging
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
-from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -36,7 +34,7 @@ def process_receipt_image(image_data: bytes, filename: str = "receipt.jpg"):
         logger.info("Sending request to Document Intelligence service")
         poller = client.begin_analyze_document(
             model_id="prebuilt-receipt",
-            analyze_request=AnalyzeDocumentRequest(base64_source=base64.b64encode(image_data).decode())
+            analyze_request=image_data
         )
         
         logger.info("Waiting for analysis results")
