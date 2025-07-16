@@ -94,14 +94,30 @@ def extract_receipt_data(result, filename):
         document = result.documents[0]
         fields = document.fields or {}
         
+        # Safe field extraction with proper error handling
+        def get_field_value(field_name):
+            try:
+                field = fields.get(field_name)
+                if field and hasattr(field, 'value') and field.value is not None:
+                    return str(field.value)
+                elif field and hasattr(field, 'content') and field.content is not None:
+                    return str(field.content)
+                return None
+            except Exception as e:
+                logger.warning(f"Error extracting field {field_name}: {e}")
+                return None
+        
+        # Extract basic receipt data
         extracted_data = {
             "filename": filename,
             "success": True,
-            "merchant_name": str(fields.get("MerchantName").value) if fields.get("MerchantName") else None,
-            "total": str(fields.get("Total").value) if fields.get("Total") else None,
-            "date": str(fields.get("TransactionDate").value) if fields.get("TransactionDate") else None,
+            "merchant_name": get_field_value("MerchantName"),
+            "total": get_field_value("Total"),
+            "date": get_field_value("TransactionDate"),
             "items": extract_items(fields.get("Items")),
-            "confidence": getattr(document, 'confidence', 0.0)
+            "confidence": getattr(document, 'confidence', 0.0),
+            "subtotal": get_field_value("Subtotal"),
+            "tax": get_field_value("TotalTax")
         }
         
         logger.info(f"Successfully extracted data from {filename}")
@@ -123,12 +139,31 @@ def extract_items(items_field):
         
         items = []
         for item in items_field.value:
-            item_fields = item.value
-            items.append({
-                'description': str(item_fields.get('Description').value) if item_fields.get('Description') else None,
-                'total_price': str(item_fields.get('TotalPrice').value) if item_fields.get('TotalPrice') else None,
-                'quantity': str(item_fields.get('Quantity').value) if item_fields.get('Quantity') else None
-            })
+            try:
+                if hasattr(item, 'value'):
+                    item_fields = item.value
+                    
+                    # Safe extraction helper
+                    def get_item_field(field_name):
+                        try:
+                            field = item_fields.get(field_name)
+                            if field and hasattr(field, 'value') and field.value is not None:
+                                return str(field.value)
+                            elif field and hasattr(field, 'content') and field.content is not None:
+                                return str(field.content)
+                            return None
+                        except Exception:
+                            return None
+                    
+                    items.append({
+                        'description': get_item_field('Description'),
+                        'total_price': get_item_field('TotalPrice'),
+                        'quantity': get_item_field('Quantity')
+                    })
+            except Exception as e:
+                logger.warning(f"Error processing item: {e}")
+                continue
+                
         return items
     except Exception as e:
         logger.warning(f"Error extracting items: {e}")

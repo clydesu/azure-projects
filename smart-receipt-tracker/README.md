@@ -1,33 +1,34 @@
 # Smart Receipt Tracker
 
-A simple web application that uses Azure Document Intelligence to extract information from receipt images.
+AI-powered receipt processing using Azure Document Intelligence.
 
 ## Features
 
-- Upload receipt images
-- Extract merchant name, total amount, and date
-- Clean, responsive interface
-- Mobile-friendly design
+- Single and bulk receipt processing
+- Automatic data extraction (merchant, total, date, items)
+- CSV export for bulk results
+- Real-time Azure Document Intelligence integration
 
-## Technologies
+## Tech Stack
 
-- HTML, CSS, JavaScript
+- Python Flask backend
 - Azure Document Intelligence API
-- Responsive web design
+- HTML/CSS/JavaScript frontend
+
+## Setup
+
+Set environment variables:
+```bash
+DOCUMENT_INTELLIGENCE_ENDPOINT=your_endpoint
+DOCUMENT_INTELLIGENCE_KEY=your_key
+```
+
+Run:
+```bash
+pip install -r requirements.txt
+python app.py
+```
 
 ## Usage
 
-1. Open `index.html` in your browser
-2. Upload a receipt image
-3. View extracted information
-
-## Configuration
-
-To use with Azure Document Intelligence:
-1. Create an Azure Document Intelligence resource
-2. Update the endpoint and API key in the JavaScript code
-3. Deploy to Azure Static Web Apps or any web hosting service
-
-## Live Demo
-
-Visit: [clydejuan-azure-projects.azurewebsites.net](https://clydejuan-azure-projects.azurewebsites.net)
+Navigate to `/smart-receipt-tracker` and upload receipt images.
