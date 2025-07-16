@@ -427,9 +427,12 @@ smart_receipt_template = """
                     <button onclick="downloadResults()" class="upload-btn" id="downloadBtn" disabled style="background: linear-gradient(45deg, #28a745, #20c997);">
                         Download Results
                     </button>
+                    <!-- Add Reset Bulk Receipts button below -->
+                    <button id="resetBulkBtn" onclick="resetBulkProcessing()" class="upload-btn" style="background: linear-gradient(45deg, #dc3545, #f39c12);">
+                        Reset Bulk Receipts
+                    </button>
                     <div id="fileList" style="margin-top: 15px;"></div>
                 </div>
-            </div>
             
             <div class="loading" id="loading">
                 <p>Azure AI is analyzing your receipt...</p>
@@ -645,6 +648,17 @@ smart_receipt_template = """
                     }
                 });
                 totalDisplay = amounts.join(' and ');
+            }
+
+            // Add this function manually after the above block
+            function resetBulkProcessing() {
+                multipleFileInput.value = "";
+                fileList.innerHTML = "";
+                results.style.display = "none";
+                resultContent.innerHTML = "";
+                bulkProcessingResults = null;
+                processBulkBtn.disabled = true;
+                downloadBtn.disabled = true;
             }
             
             let html = `
