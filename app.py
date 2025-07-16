@@ -605,6 +605,7 @@ smart_receipt_template = """
             
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             // Format the total amounts display
             let totalDisplay = '';
@@ -622,6 +623,8 @@ smart_receipt_template = """
             }
             
 >>>>>>> parent of ed5435f (added reset button)
+=======
+>>>>>>> parent of b02bac1 (Clean up project and remove unnecessary files)
 =======
 >>>>>>> parent of b02bac1 (Clean up project and remove unnecessary files)
             let html = `
