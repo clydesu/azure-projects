@@ -427,6 +427,13 @@ smart_receipt_template = """
                     <button onclick="downloadResults()" class="upload-btn" id="downloadBtn" disabled style="background: linear-gradient(45deg, #28a745, #20c997);">
                         Download Results
                     </button>
+<<<<<<< HEAD
+=======
+                    <!-- Add Reset Bulk Receipts button below -->
+                    <button id="resetBulkBtn" onclick="resetBulkProcessing()" class="upload-btn" style="background: linear-gradient(45deg, #dc3545, #f39c12);">
+                        Reset Bulk Receipts
+                    </button>
+>>>>>>> parent of 756892c (added reset button)
                     <div id="fileList" style="margin-top: 15px;"></div>
                 </div>
             </div>
