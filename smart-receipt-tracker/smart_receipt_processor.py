@@ -275,9 +275,3 @@ def extract_items(items_field):
     
     logger.info(f"Final grouped items: {final_items}")
     return final_items
-
-# Example for your frontend or wherever you show the integration message
-integration_message = (
-    "Live Azure integration: This application uses Azure Document Intelligence for professional OCR processing. "
-    "Upload your receipts to see AI in action!"
-)
