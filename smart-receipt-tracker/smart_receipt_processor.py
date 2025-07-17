@@ -2,6 +2,7 @@ import os
 import logging
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
+from smart_receipt_tracker.smart_receipt_processor import process_receipt_image
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
