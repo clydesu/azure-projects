@@ -2,6 +2,10 @@ from flask import Flask, send_from_directory, render_template_string, request, j
 import os
 import sys
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env file for local development
+load_dotenv(os.path.join(os.path.dirname(__file__), 'smart-receipt-tracker', '.env'))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -562,29 +566,39 @@ smart_receipt_template = """
         }
 
         function displayResults(data) {
+            console.log('Received data:', data); // Debug: log received data
             results.style.display = 'block';
             resultContent.innerHTML = `
-                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">Receipt Analysis Results</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                        <div style="background: #f8f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
-                            <strong style="color: #495057;">Merchant</strong><br>
-                            <span style="font-size: 1.1rem;">${data.merchant_name || 'Not detected'}</span>
+                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <h4 style="color: #667eea; margin-bottom: 12px; font-size: 1.1rem;">Receipt Analysis Results</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px;">
+                        <div style="background: #f8f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #667eea;">
+                            <strong style="color: #495057; font-size: 0.8rem;">Merchant</strong><br>
+                            <span style="font-size: 0.9rem; color: #333;">${data.merchant_name || 'Not detected'}</span>
                         </div>
-                        <div style="background: #f8f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
-                            <strong style="color: #495057;">Total</strong><br>
-                            <span style="font-size: 1.1rem; font-weight: bold;">$${data.total || '0.00'}</span>
+                        <div style="background: #f8f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #28a745;">
+                            <strong style="color: #495057; font-size: 0.8rem;">Total Amount</strong><br>
+                            <span style="font-size: 0.9rem; font-weight: bold; color: #28a745;">${data.total || 'Not detected'}</span>
                         </div>
-                        <div style="background: #f8f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8;">
-                            <strong style="color: #495057;">Date</strong><br>
-                            <span style="font-size: 1.1rem;">${data.date || 'Not detected'}</span>
+                        <div style="background: #f8f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #17a2b8;">
+                            <strong style="color: #495057; font-size: 0.8rem;">Date of Purchase</strong><br>
+                            <span style="font-size: 0.9rem; color: #333;">${data.date_of_purchase || data.date || 'Not detected'}</span>
                         </div>
                     </div>
-                    ${data.items && data.items.length > 0 ? 
-                        '<div style="margin-top: 20px;"><h5 style="color: #495057; margin-bottom: 10px;">Items:</h5>' + 
-                        data.items.map(item => `<div style="background: #e9ecef; padding: 10px; margin: 5px 0; border-radius: 5px;">${item.description || 'Item'} - $${item.total_price || 'N/A'}</div>`).join('') + 
-                        '</div>' : ''
-                    }
+                    ${data.items && data.items.length > 0 ? `
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                            <strong style="color: #495057; font-size: 0.85rem; margin-bottom: 6px; display: block;">Items (${data.items.length}):</strong>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 4px; font-size: 0.75rem;">
+                                ${data.items.slice(0, 8).map(item => `
+                                    <div style="display: flex; justify-content: space-between; padding: 4px 6px; background: white; border-radius: 3px; border-left: 2px solid #e9ecef;">
+                                        <span style="color: #666; flex: 1;">${(item.description || 'Item').substring(0, 25)}${(item.description || 'Item').length > 25 ? '...' : ''}</span>
+                                        <span style="color: #28a745; font-weight: bold; margin-left: 8px;">${item.total_price || 'N/A'}</span>
+                                    </div>
+                                `).join('')}
+                                ${data.items.length > 8 ? `<div style="color: #666; font-style: italic; grid-column: 1/-1; text-align: center; padding: 4px;">... and ${data.items.length - 8} more items</div>` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             `;
         }
@@ -592,21 +606,32 @@ smart_receipt_template = """
         function displayBulkResults(data) {
             results.style.display = 'block';
             
-            let totalAmount = 0;
+            let totalAmounts = {}; // Store totals by currency
             let successCount = 0;
             
             data.results.forEach(receipt => {
                 if (receipt.success && receipt.total) {
-                    const amount = parseFloat(receipt.total.replace('$$', '')) || 0;
-                    totalAmount += amount;
+                    // Extract currency and amount from strings like "CHF 54.50" or "$ 117.00"
+                    const totalStr = receipt.total.trim();
+                    console.log('Processing total:', totalStr); // Debug log
+                    
+                    // Match currency patterns: CHF 54.50, $ 117.00, USD 50.00, etc.
+                    const match = totalStr.match(/([A-Z]{3}|\\$|€|£)\\s*([0-9,]+\\.?[0-9]*)/i);
+                    
+                    if (match) {
+                        const currency = match[1] === '$' ? 'USD' : match[1];
+                        const amount = parseFloat(match[2].replace(',', ''));
+                        
+                        if (!totalAmounts[currency]) {
+                            totalAmounts[currency] = 0;
+                        }
+                        totalAmounts[currency] += amount;
+                        console.log(`Added ${amount} ${currency}, total now: ${totalAmounts[currency]}`); // Debug log
+                    }
                     successCount++;
                 }
             });
             
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
             // Format the total amounts display
             let totalDisplay = '';
             if (Object.keys(totalAmounts).length === 0) {
@@ -622,15 +647,10 @@ smart_receipt_template = """
                 totalDisplay = amounts.join(' and ');
             }
             
->>>>>>> parent of ed5435f (added reset button)
-=======
->>>>>>> parent of b02bac1 (Clean up project and remove unnecessary files)
-=======
->>>>>>> parent of b02bac1 (Clean up project and remove unnecessary files)
             let html = `
-                <div style="background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
-                    <h3>Total Amount: $${totalAmount.toFixed(2)}</h3>
-                    <p>Successfully processed: ${successCount} out of ${data.results.length} receipts</p>
+                <div style="background: linear-gradient(45deg, #28a745, #20c997); color: white; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 1.1rem;">Total Amount: ${totalDisplay}</h4>
+                    <p style="margin: 0; font-size: 0.85rem; opacity: 0.9;">Successfully processed: ${successCount} out of ${data.results.length} receipts</p>
                 </div>
             `;
             
@@ -639,16 +659,33 @@ smart_receipt_template = """
                 const statusIcon = receipt.success ? 'Success' : 'Error';
                 
                 html += `
-                    <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid ${statusColor}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <h5 style="color: #495057; margin-bottom: 10px;">${statusIcon} - Receipt ${index + 1}: ${receipt.filename}</h5>
+                    <div style="background: white; padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid ${statusColor}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h6 style="color: #495057; margin: 0; font-size: 0.9rem;">${statusIcon} - ${receipt.filename}</h6>
+                            <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">Receipt ${index + 1}</span>
+                        </div>
                         ${receipt.success ? `
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
-                                <div><strong>Merchant:</strong> ${receipt.merchant_name || 'Not detected'}</div>
-                                <div><strong>Total:</strong> $${receipt.total || '0.00'}</div>
-                                <div><strong>Date:</strong> ${receipt.date || 'Not detected'}</div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; font-size: 0.85rem; margin-bottom: 8px;">
+                                <div><strong>Merchant:</strong><br><span style="color: #666;">${receipt.merchant_name || 'Not detected'}</span></div>
+                                <div><strong>Total:</strong><br><span style="color: #28a745; font-weight: bold;">${receipt.total || 'Not detected'}</span></div>
+                                <div><strong>Date:</strong><br><span style="color: #666;">${receipt.date_of_purchase || receipt.date || 'Not detected'}</span></div>
                             </div>
+                            ${receipt.items && receipt.items.length > 0 ? `
+                                <div style="background: #f8f9fa; padding: 8px; border-radius: 4px; margin-top: 8px;">
+                                    <strong style="font-size: 0.8rem; color: #495057;">Items (${receipt.items.length}):</strong>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px; margin-top: 4px; font-size: 0.75rem;">
+                                        ${receipt.items.slice(0, 6).map(item => `
+                                            <div style="display: flex; justify-content: space-between; padding: 2px 4px; background: white; border-radius: 3px;">
+                                                <span style="color: #666; truncate;">${(item.description || 'Item').substring(0, 20)}${(item.description || 'Item').length > 20 ? '...' : ''}</span>
+                                                <span style="color: #28a745; font-weight: bold;">${item.total_price || 'N/A'}</span>
+                                            </div>
+                                        `).join('')}
+                                        ${receipt.items.length > 6 ? `<div style="color: #666; font-style: italic; grid-column: 1/-1;">... and ${receipt.items.length - 6} more items</div>` : ''}
+                                    </div>
+                                </div>
+                            ` : ''}
                         ` : `
-                            <p style="color: #dc3545;"><strong>Error:</strong> ${receipt.error}</p>
+                            <p style="color: #dc3545; font-size: 0.85rem; margin: 0;"><strong>Error:</strong> ${receipt.error}</p>
                         `}
                     </div>
                 `;
@@ -674,23 +711,36 @@ smart_receipt_template = """
                 return;
             }
 
-            let csvContent = "Filename,Merchant,Total,Date,Success,Error\\n";
+            let csvContent = "Filename,Merchant,Total,Date of Purchase,Items,Items Count\\n";
             
             bulkProcessingResults.results.forEach(receipt => {
                 const merchant = (receipt.merchant_name || 'N/A').replace(/"/g, '""');
-                const total = receipt.total || '0.00';
-                const date = receipt.date || 'N/A';
-                const success = receipt.success ? 'Yes' : 'No';
-                const error = receipt.error ? receipt.error.replace(/"/g, '""') : '';
+                const total = receipt.total || 'Not detected';
+                const date = receipt.date_of_purchase || receipt.date || 'N/A';
                 
-                csvContent += `"$${receipt.filename}","$${merchant}","$${total}","$${date}","$${success}","$${error}"\\n`;
+                // Format items for CSV
+                let itemsText = '';
+                let itemsCount = 0;
+                if (receipt.items && receipt.items.length > 0) {
+                    itemsCount = receipt.items.length;
+                    itemsText = receipt.items.map(item => {
+                        const desc = item.description || 'Item';
+                        const price = item.total_price || 'N/A';
+                        // Description already includes quantity (e.g., "2x Coffee")
+                        return `${desc}: ${price}`;
+                    }).join('; ');
+                } else {
+                    itemsText = 'No items detected';
+                }
+                
+                csvContent += `"${receipt.filename}","${merchant}","${total}","${date}","${itemsText.replace(/"/g, '""')}","${itemsCount}"\\n`;
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `receipt_results_$${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `receipt_results_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
             window.URL.revokeObjectURL(url);
         }
@@ -728,6 +778,9 @@ def process_receipt():
         # Read and process file
         image_data = file.read()
         result = process_receipt_image(image_data, file.filename)
+        
+        # Debug: log what we're sending to frontend
+        logger.info(f"Sending to frontend: {result}")
         
         response = jsonify(result)
         response.headers.add('Access-Control-Allow-Origin', '*')
