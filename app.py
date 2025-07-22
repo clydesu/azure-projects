@@ -226,7 +226,9 @@ portfolio_template = """
         <div class="projects-grid">
             <div class="project-card">
                 <h3>Smart Receipt Tracker</h3>
-                <p>Intelligent expense management with Azure Document Intelligence. Upload receipts, extract data automatically, and categorize expenses with AI-powered analysis. Includes bulk processing and CSV export.</p>
+                <p>
+                    Fast receipt tracking powered by Azure Document Intelligence. Upload receipts, extract key data instantly, and organize your expenses with AI-driven OCR. Supports bulk receipt processing and CSV export for easy review.
+                </p>
                 <a href="/smart-receipt-tracker" class="project-link">Try Live App</a>
             </div>
             
@@ -258,10 +260,10 @@ portfolio_template = """
         <footer class="contact">
             <h3>Contact</h3>
             <div style="margin-top: 1rem;">
-                <a href="https://clydejuan.me" target="_blank">Portfolio</a>
-                <a href="https://linkedin.com/in/clydesu" target="_blank">LinkedIn</a>
+                <a href="https://clydejuan.me" target="_blank">Personal Website</a>
+                <a href="https://www.linkedin.com/in/clydejuan/" target="_blank">LinkedIn</a>
                 <a href="mailto:clydezjuan@gmail.com">Email</a>
-                <a href="https://github.com/clydesu/azure-projects" target="_blank">GitHub</a>
+                <a href="https://github.com/clydesu" target="_blank">GitHub</a>
             </div>
         </footer>
     </div>
@@ -677,7 +679,7 @@ smart_receipt_template = """
                                 <div><strong>Date:</strong><br><span style="color: #666;">${receipt.date_of_purchase || receipt.date || 'Not detected'}</span></div>
                             </div>
                             ${receipt.items && receipt.items.length > 0 ? `
-                                <div style="background: #f8f9fa; padding: 8px; border-radius: 4px; margin-top: 8px;">
+                                <div style="background: #f9f9f9; padding: 8px; border-radius: 4px; margin-top: 8px;">
                                     <strong style="font-size: 0.8rem; color: #495057;">Items (${receipt.items.length}):</strong>
                                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px; margin-top: 4px; font-size: 0.75rem;">
                                         ${receipt.items.slice(0, 6).map(item => `
