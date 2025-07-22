@@ -219,8 +219,8 @@ portfolio_template = """
     <div class="container">
         <header class="header">
             <h1>Azure AI Projects Portfolio</h1>
-            <p>Cutting-edge AI solutions powered by Microsoft Azure</p>
-            <p class="subtitle">Production-ready • Real-world applications • Modern tech stack</p>
+            <p>Personal showcase of Azure AI Services</p>
+            <p class="subtitle">Personal showcase • Azure AI demos • Learning-focused</p>
         </header>
         
         <div class="projects-grid">
@@ -393,12 +393,11 @@ smart_receipt_template = """
         <div class="header">
             <a href="/" class="back-button">← Back to Portfolio</a>
             <h1>Smart Receipt Tracker</h1>
-            <p>AI-Powered Receipt Processing with Azure Document Intelligence</p>
+            <p>Receipt extraction using Azure Document Intelligence</p>
         </div>
-        
         <div class="content">
             <div class="info-note">
-                <strong>Live Azure Integration:</strong> This application uses Azure Document Intelligence for professional OCR processing. Upload your receipts to see AI in action!
+                <strong>Live Azure Integration:</strong> This application uses Azure Document Intelligence for OCR processing. Make a fast receipt tracker with Azure Document Intelligence!
             </div>
             
             <div style="margin: 40px 0;">
