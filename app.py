@@ -200,6 +200,55 @@ portfolio_template = """
             text-decoration: underline;
         }
         
+        .floating-contact-navbar {
+            position: fixed;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(102,126,234,0.18);
+            border-radius: 22px;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.10);
+            padding: 6px 14px;
+            display: flex;
+            gap: 12px;
+            z-index: 999;
+            align-items: center;
+            backdrop-filter: blur(6px);
+        }
+        .floating-contact-navbar a {
+            display: flex;
+            align-items: center;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .floating-contact-navbar a:hover {
+            background: rgba(255,255,255,0.12);
+        }
+        .floating-contact-navbar img {
+            width: 22px;
+            height: 22px;
+            opacity: 0.9;
+            filter: brightness(0) saturate(100%) invert(20%) sepia(60%) saturate(400%) hue-rotate(210deg) brightness(0.95) contrast(1.2);
+            /* This filter gives a deep blue-violet tone that complements your gradient */
+            transition: opacity 0.2s, filter 0.2s;
+        }
+        .floating-contact-navbar a:hover img {
+            opacity: 1;
+            filter: brightness(1.2) saturate(120%) invert(10%) sepia(80%) saturate(600%) hue-rotate(260deg) brightness(1.1) contrast(1.3);
+            /* Slightly lighter and more vibrant on hover */
+        }
+        @media (max-width: 600px) {
+            .floating-contact-navbar {
+                flex-direction: row;
+                left: 50%;
+                bottom: 10px;
+                padding: 6px 8px;
+                gap: 8px;
+                transform: translateX(-50%);
+            }
+        }
+        
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -256,17 +305,36 @@ portfolio_template = """
                 <a href="/image-captioning-app" class="project-link">Try It</a>
             </div>
         </div>
-        
-        <footer class="contact">
-            <h3>Contact</h3>
-            <div style="margin-top: 1rem;">
-                <a href="https://clydejuan.me" target="_blank">Personal Website</a>
-                <a href="https://www.linkedin.com/in/clydejuan/" target="_blank">LinkedIn</a>
-                <a href="mailto:clydezjuan@gmail.com">Email</a>
-                <a href="https://github.com/clydesu" target="_blank">GitHub</a>
-            </div>
-        </footer>
     </div>
+
+    <div class="floating-contact-navbar">
+        <a href="https://clydejuan.me" target="_blank" title="Personal Website">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/domain.png" style="vertical-align:middle;opacity:0.7;">
+        </a>
+        <a href="https://www.linkedin.com/in/clydejuan/" target="_blank" title="LinkedIn">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/linkedin.png" style="vertical-align:middle;opacity:0.7;">
+        </a>
+        <a href="mailto:clydezjuan@gmail.com" title="Email">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/new-post.png" style="vertical-align:middle;opacity:0.7;">
+        </a>
+        <a href="https://github.com/clydesu" target="_blank" title="GitHub">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/github.png" style="vertical-align:middle;opacity:0.7;">
+        </a>
+    </div>
+
+    <script>
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
 """
