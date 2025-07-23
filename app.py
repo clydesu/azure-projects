@@ -4,16 +4,28 @@ import sys
 import logging
 from dotenv import load_dotenv
 
-# Load environment variables from .env file for local development
+seo_summarizer_path = os.path.join(os.path.dirname(__file__), 'SEO-Content-Analyzer')
+if seo_summarizer_path not in sys.path:
+    sys.path.append(seo_summarizer_path)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+try:
+    from seo_content_analyzer import get_seo_insights 
+    logger.info("SEO Content Analyzer service imported successfully")
+except ImportError as e:
+    logger.warning(f"SEO Content Analyzer service not available: {e}")
+    def get_seo_insights(*args, **kwargs):
+        raise NotImplementedError("SEO Content Analyzer module is not available.")
+
 load_dotenv(os.path.join(os.path.dirname(__file__), 'smart-receipt-tracker', '.env'))
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Add smart-receipt-tracker to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'smart-receipt-tracker'))
 
 try:
@@ -282,9 +294,9 @@ portfolio_template = """
             </div>
             
             <div class="project-card">
-                <h3>Blog Summarizer</h3>
+                <h3>SEO Content Analyzer</h3>
                 <p>Transform lengthy articles into concise, actionable summaries using Azure Cognitive Services. Perfect for content creators and researchers who need quick insights.</p>
-                <a href="/blog-summarizer" class="project-link">Explore</a>
+                <a href="/SEO-Content-Analyzer" class="project-link">Try Live App</a>
             </div>
             
             <div class="project-card">
@@ -309,10 +321,10 @@ portfolio_template = """
 
     <div class="floating-contact-navbar">
         <a href="https://clydejuan.me" target="_blank" title="Personal Website">
-            <img src="https://img.icons8.com/ios-filled/24/ffffff/domain.png" style="vertical-align:middle;opacity:0.7;">
+           
         </a>
         <a href="https://www.linkedin.com/in/clydejuan/" target="_blank" title="LinkedIn">
-            <img src="https://img.icons8.com/ios-filled/24/ffffff/linkedin.png" style="vertical-align:middle;opacity:0.7;">
+            <img src="https://img.icons8.com/ios
         </a>
         <a href="mailto:clydezjuan@gmail.com" title="Email">
             <img src="https://img.icons8.com/ios-filled/24/ffffff/new-post.png" style="vertical-align:middle;opacity:0.7;">
@@ -654,7 +666,7 @@ smart_receipt_template = """
                         </div>
                         <div style="background: #f8f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #28a745;">
                             <strong style="color: #495057; font-size: 0.8rem;">Total Amount</strong><br>
-                            <span style="font-size: 0.9rem; font-weight: bold; color: #28a745;">${data.total || 'Not detected'}</span>
+                            <span style="font-size: 0.9rem; font-weight: 700; color: #28a745;">${data.total || 'Not detected'}</span>
                         </div>
                         <div style="background: #f8f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #17a2b8;">
                             <strong style="color: #495057; font-size: 0.8rem;">Date of Purchase</strong><br>
@@ -846,6 +858,244 @@ smart_receipt_template = """
 </html>
 """
 
+# SEO Content Analyzer template
+seo_content_analyzer_template = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Content Analyzer - Azure AI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 40px;
+        }
+        .info-note {
+            background: linear-gradient(45deg, #fff3cd, #fff8e1);
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #f39c12;
+        }
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 12px;
+            font-size: 1em;
+            margin-bottom: 18px;
+            resize: vertical;
+        }
+        .upload-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(145deg, #f8fff8, #ffffff);
+            border-radius: 12px;
+            border-left: 5px solid #4caf50;
+        }
+        .try-app-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+        .try-app-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" style="position:relative;">
+            <a href="/" class="back-button" style="position:absolute;left:30px;top:32%;transform:translateY(-50%);background:rgba(255,255,255,0.2);color:white;border:none;padding:10px 20px;border-radius:25px;text-decoration:none;font-size:0.9rem;transition:all 0.3s ease;">
+                ← Back to Portfolio
+            </a>
+            <h1>SEO Content Analyzer</h1>
+            <p>Analyze your content for SEO insights using Azure AI Language</p>
+        </div>
+        <div class="content">
+            <div class="info-note">
+                <strong>How it works:</strong> Paste your content below and click Enter Content to get Key Topics, Entities, Sentiment, Readability, and actionable SEO insights powered by Azure AI Language.
+            </div>
+            <!-- Align Reset and Enter Content buttons horizontally -->
+            <form id="seoForm" onsubmit="event.preventDefault(); analyzeContent();" style="display:flex;flex-direction:column;gap:10px;">
+                <textarea id="content" placeholder="Paste your content here..."></textarea>
+                <div style="display:flex;gap:12px;">
+                    <button type="submit" class="upload-btn" id="analyzeBtn" style="flex:1;">Enter Content</button>
+                    <button type="button" class="upload-btn" style="background:linear-gradient(45deg,#dc3545,#e57373);flex:1;" onclick="resetSEOContent()">
+                        Reset
+                    </button>
+                </div>
+            </form>
+            <div class="results" id="results">
+                <h3>SEO Insights</h3>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function analyzeContent() {
+            const content = document.getElementById('content').value.trim();
+            const btn = document.getElementById('analyzeBtn');
+            const results = document.getElementById('results');
+            const resultContent = document.getElementById('resultContent');
+            if (!content) {
+                alert('Please paste your content content.');
+                return;
+            }
+            btn.disabled = true;
+            btn.innerText = "Analyzing...";
+            results.style.display = 'none';
+            resultContent.innerHTML = "";
+            try {
+                const response = await fetch('/api/seo-insights', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                const data = await response.json();
+                if (data.error) {
+                    resultContent.innerHTML = `<div style="color:#dc3545;">${data.error}</div>`;
+                } else {
+                    results.style.display = 'block';
+                    resultContent.innerHTML = `
+                        <div style="background:#f8f9ff;padding:15px;border-radius:8px;">
+                            <h4 style="color:#667eea;">SEO Content Insights</h4>
+                            <ul style="list-style:none;padding:0;">
+                                <li>
+                                    <strong>Key Topics:</strong>
+                                    <ul>
+                                        ${(data.key_phrases || []).slice(0, 5).map(kp => `<li style="display:inline-block;background:#e3eafe;color:#333;padding:3px 10px;margin:2px 4px 2px 0;border-radius:12px;font-size:0.95em;">${kp}</li>`).join('')}
+                                        ${data.key_phrases.length > 5 ? `<li style="display:inline;color:#888;">...and ${data.key_phrases.length - 5} more</li>` : ''}
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Sentiment:</strong>
+                                    <span style="color:${data.sentiment === 'positive' ? '#28a745' : data.sentiment === 'negative' ? '#dc3545' : '#f39c12'};font-weight:bold;">
+                                        ${data.sentiment.charAt(0).toUpperCase() + data.sentiment.slice(1)}
+                                    </span>
+                                    <span style="font-size:0.9em;color:#888;">
+                                        (Pos: ${data.sentiment_scores?.positive?.toFixed(2)}, Neu: ${data.sentiment_scores?.neutral?.toFixed(2)}, Neg: ${data.sentiment_scores?.negative?.toFixed(2)})
+                                    </span>
+                                </li>
+                                <li>
+                                    <strong>Entities:</strong>
+                                    <ul>
+                                        ${(data.entities || []).slice(0, 5).map(ent => `<li style="display:inline-block;background:#f0f8e8;color:#333;padding:3px 10px;margin:2px 4px 2px 0;border-radius:12px;font-size:0.95em;">${ent}</li>`).join('')}
+                                        ${data.entities.length > 5 ? `<li style="display:inline;color:#888;">...and ${data.entities.length - 5} more</li>` : ''}
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Readability:</strong> <span style="color:#f39c12;">${data.readability}</span>
+                                    <span style="font-size:0.9em;color:#888;">(${data.readability < 60 ? "Try simpler language for a wider audience." : "Easy to read!"})</span>
+                                </li>
+                                <li>
+                                    <strong>Grade Level:</strong> <span style="color:#f39c12;">${data.grade_level}</span>
+                                    <span style="font-size:0.9em;color:#888;">(${typeof data.grade_level === "string" && data.grade_level.match(/(1[2-9]|[2-9][0-9])/)? "Try lowering for general readers." : "Good for most readers."})</span>
+                                </li>
+                                <li>
+                                    <strong>Structure:</strong>
+                                    <ul>
+                                        <li>Headings: <b>${data.structure_feedback?.headings ?? 0}</b></li>
+                                        <li>Bullet Points: <b>${data.structure_feedback?.bullet_points ?? 0}</b></li>
+                                        <li>Short Paragraphs: <b>${data.structure_feedback?.short_paragraphs ?? 0}</b></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>Tone Consistency:</strong> ${data.tone_consistent ? "<span style='color:#28a745;'>Consistent</span>" : "<span style='color:#dc3545;'>Inconsistent</span>"}
+                                </li>
+                                <li>
+                                    <strong>Long Sentences (&gt;25 words):</strong> <span style="color:#dc3545;">${data.long_sentences.length}</span>
+                                    ${data.long_sentences.length > 0 ? `<span style="font-size:0.9em;color:#888;">Try splitting long sentences for clarity.</span>` : ""}
+                                </li>
+                                <li>
+                                    <strong>Call to Action:</strong> ${data.call_to_action_found ? "<span style='color:#28a745;'>Found</span>" : "<span style='color:#dc3545;'>Not found. Add a clear call to action."}
+                                </li>
+                            </ul>
+                            <hr>
+                            <div style="font-size:0.98em;">
+                                <b>Suggestions:</b>
+                                <ul style="margin-top:4px;">
+                                    ${data.readability < 60 ? "<li>Use simpler language and shorter sentences.</li>" : ""}
+                                    ${data.structure_feedback?.headings === 0 ? "<li>Add headings to organize your content.</li>" : ""}
+                                    ${data.structure_feedback?.bullet_points === 0 ? "<li>Use bullet points for clarity.</li>" : ""}
+                                    ${!data.call_to_action_found ? "<li>Add a clear call to action (e.g., 'Contact us', 'Learn more').</li>" : ""}
+                                    ${data.long_sentences.length > 0 ? "<li>Break up long sentences to improve clarity.</li>" : ""}
+                                    ${data.tone_consistent === false ? "<li>Keep your tone consistent throughout the content.</li>" : ""}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultContent.innerHTML = `<div style="color:#dc3545;">Network error: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Try Live App";
+            }
+        }
+
+        function resetSEOContent() {
+            document.getElementById('content').value = '';
+            document.getElementById('resultContent').innerHTML = '';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = false;
+            document.getElementById('analyzeBtn').innerText = "Enter Content";
+        }
+    </script>
+</body>
+</html>
+"""
+
 # Routes
 @app.route('/')
 def portfolio():
@@ -854,6 +1104,10 @@ def portfolio():
 @app.route('/smart-receipt-tracker')
 def smart_receipt_tracker():
     return render_template_string(smart_receipt_template)
+
+@app.route('/SEO-Content-Analyzer')
+def seo_content_analyzer_alias():
+    return render_template_string(seo_content_analyzer_template)
 
 @app.route('/api/process_receipt', methods=['POST', 'OPTIONS'])
 def process_receipt():
@@ -873,15 +1127,15 @@ def process_receipt():
             return jsonify({"error": "No file selected"}), 400
 
         # Read and process file
-        image_data = file.read()
-        result = process_receipt_image(image_data, file.filename)
+        image_data = file.read();
+        result = process_receipt_image(image_data, file.filename);
 
         # Debug: log what we're sending to frontend
         logger.info(f"Sending to frontend: {result}")
         
-        response = jsonify(result)
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        response = jsonify(result);
+        response.headers.add('Access-Control-Allow-Origin', '*');
+        return response;
 
     except Exception as e:
         logger.error(f"Error processing receipt: {e}")
@@ -916,11 +1170,11 @@ def process_multiple():
                 'data': file.read()
             })
 
-        result = process_multiple_receipts(images_data)
+        result = process_multiple_receipts(images_data);
 
-        response = jsonify(result)
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        response = jsonify(result);
+        response.headers.add('Access-Control-Allow-Origin', '*');
+        return response;
 
     except Exception as e:
         logger.error(f"Error processing multiple receipts: {e}")
@@ -939,6 +1193,19 @@ def serverless_chatbot():
 @app.route('/image-captioning-app')
 def image_captioning_app():
     return send_from_directory('image-captioning-app', 'README.md')
+
+@app.route('/api/seo-insights', methods=['POST'])
+def seo_insights_route():
+    data = request.get_json()
+    content = data.get("content", "");
+    if not content:
+        return jsonify({"error": "No content provided"}), 400
+    try:
+        insights = get_seo_insights(content)
+        return jsonify(insights)
+    except Exception as e:
+        logger.error(f"SEO Insights error: {e}", exc_info=True)  # Add this for full traceback
+        return jsonify({"error": str(e)}), 500
 
 # Serve static files
 @app.route('/<path:filename>')

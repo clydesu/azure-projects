@@ -10,11 +10,6 @@ def create_document_intelligence_client():
     endpoint = os.environ.get("DOCUMENT_INTELLIGENCE_ENDPOINT")
     key = os.environ.get("DOCUMENT_INTELLIGENCE_KEY")
 
-    if not endpoint:
-        endpoint = "https://smart-receipt-tracker.cognitiveservices.azure.com/"
-    if not key:
-        key = "AgGhkMBg0SzgcbhxgupDGb4aRDVgeq459wnT4cu1tvjY1dPSpfYZJQQJ99BGACYeBjFXJ3w3AAALACOGP6vp"
-
     client = DocumentIntelligenceClient(endpoint=endpoint, credential=AzureKeyCredential(key))
     return client
 
