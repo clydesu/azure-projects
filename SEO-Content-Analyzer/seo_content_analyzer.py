@@ -7,13 +7,11 @@ import textstat
 from collections import Counter
 
 load_dotenv()
-AZURE_LANGUAGE_KEY = os.getenv("AZURE_LANGUAGE_KEY")
-AZURE_LANGUAGE_ENDPOINT = os.getenv("AZURE_LANGUAGE_ENDPOINT")
 
-client = TextAnalyticsClient(
-    endpoint=AZURE_LANGUAGE_ENDPOINT,
-    credential=AzureKeyCredential(AZURE_LANGUAGE_KEY)
-)
+def create_text_analytics_client():
+    endpoint = os.environ.get("AZURE_LANGUAGE_ENDPOINT")
+    key = os.environ.get("AZURE_LANGUAGE_KEY")
+    return TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))
 
 def clean_key_phrases(raw_phrases, content):
     # Lowercase, strip, remove very long/verbose, group by frequency
@@ -56,6 +54,7 @@ def filter_entities(raw_entities):
     return list(dict.fromkeys(normalized))[:8]
 
 def get_seo_insights(content):
+    client = create_text_analytics_client()
     # 1. Key Phrase Extraction (Azure uses NER, key phrase extraction, TF-IDF style weighting)
     key_phrases_raw = client.extract_key_phrases([content])[0].key_phrases
     key_phrases = clean_key_phrases(key_phrases_raw, content)

@@ -213,19 +213,16 @@ portfolio_template = """
         }
         
         .floating-contact-navbar {
+            padding: 4px 10px;
+            gap: 8px;
+            border-radius: 16px;
+            display: flex;
+            background: rgba(102,126,234,0.13);
             position: fixed;
             bottom: 18px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(102,126,234,0.18);
-            border-radius: 22px;
-            box-shadow: 0 4px 16px rgba(102,126,234,0.10);
-            padding: 6px 14px;
-            display: flex;
-            gap: 12px;
             z-index: 999;
-            align-items: center;
-            backdrop-filter: blur(6px);
         }
         .floating-contact-navbar a {
             display: flex;
@@ -238,17 +235,12 @@ portfolio_template = """
             background: rgba(255,255,255,0.12);
         }
         .floating-contact-navbar img {
-            width: 22px;
-            height: 22px;
-            opacity: 0.9;
-            filter: brightness(0) saturate(100%) invert(20%) sepia(60%) saturate(400%) hue-rotate(210deg) brightness(0.95) contrast(1.2);
-            /* This filter gives a deep blue-violet tone that complements your gradient */
-            transition: opacity 0.2s, filter 0.2s;
+            width: 20px;
+            height: 20px;
+            transition: filter 0.2s;
         }
         .floating-contact-navbar a:hover img {
-            opacity: 1;
-            filter: brightness(1.2) saturate(120%) invert(10%) sepia(80%) saturate(600%) hue-rotate(260deg) brightness(1.1) contrast(1.3);
-            /* Slightly lighter and more vibrant on hover */
+            filter: brightness(1.2) saturate(120%);
         }
         @media (max-width: 600px) {
             .floating-contact-navbar {
@@ -319,21 +311,25 @@ portfolio_template = """
         </div>
     </div>
 
-    <div class="floating-contact-navbar">
-        <a href="https://clydejuan.me" target="_blank" title="Personal Website">
-           
+    <div class="floating-contact-navbar" style="padding:4px 10px; gap:8px; border-radius:16px; display:flex; background:rgba(102,126,234,0.13); position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:999;">
+        <a href="https://clydejuan.me" target="_blank" title="Personal Website" style="display:flex;align-items:center;">
+            <img src="https://img.icons8.com/ios-filled/20/222/domain.png" style="width:20px;height:20px;transition:filter 0.2s;">
         </a>
-        <a href="https://www.linkedin.com/in/clydejuan/" target="_blank" title="LinkedIn">
-            <img src="https://img.icons8.com/ios
+        <a href="https://www.linkedin.com/in/clydejuan/" target="_blank" title="LinkedIn" style="display:flex;align-items:center;">
+            <img src="https://img.icons8.com/ios-filled/20/222/linkedin.png" style="width:20px;height:20px;transition:filter 0.2s;">
         </a>
-        <a href="mailto:clydezjuan@gmail.com" title="Email">
-            <img src="https://img.icons8.com/ios-filled/24/ffffff/new-post.png" style="vertical-align:middle;opacity:0.7;">
+        <a href="mailto:clydezjuan@gmail.com" title="Email" style="display:flex;align-items:center;">
+            <img src="https://img.icons8.com/ios-filled/20/222/new-post.png" style="width:20px;height:20px;transition:filter 0.2s;">
         </a>
-        <a href="https://github.com/clydesu" target="_blank" title="GitHub">
-            <img src="https://img.icons8.com/ios-filled/24/ffffff/github.png" style="vertical-align:middle;opacity:0.7;">
+        <a href="https://github.com/clydesu" target="_blank" title="GitHub" style="display:flex;align-items:center;">
+            <img src="https://img.icons8.com/ios-filled/20/222/github.png" style="width:20px;height:20px;transition:filter 0.2s;">
         </a>
     </div>
-
+    <style>
+    .floating-contact-navbar a:hover img {
+        filter: brightness(1.2) saturate(120%);
+    }
+    </style>
     <script>
         // Smooth scrolling for internal links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1080,7 +1076,7 @@ seo_content_analyzer_template = """
                 resultContent.innerHTML = `<div style="color:#dc3545;">Network error: ${err.message}</div>`;
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Try Live App";
+                btn.innerText = "Enter Content"; // <-- Fix: restore correct button text
             }
         }
 
