@@ -5,9 +5,7 @@ import logging
 from dotenv import load_dotenv
 
 import sys, os
-seo_summarizer_path = os.path.join(os.path.dirname(__file__), 'seo-content-Analyzer')
-if seo_summarizer_path not in sys.path:
-    sys.path.append(seo_summarizer_path)
+sys.path.append(os.path.join(os.path.dirname(__file__), 'seo_content_analyzer'))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,14 +18,15 @@ except ImportError as e:
     def get_seo_insights(*args, **kwargs):
         raise NotImplementedError("SEO Content Analyzer module is not available.")
 
-load_dotenv(os.path.join(os.path.dirname(__file__), 'smart-receipt-tracker', '.env'))
+load_dotenv(os.path.join(os.path.dirname(__file__), 'smart_receipt_tracker', '.env'))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'smart-receipt-tracker'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'smart_receipt_tracker'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'seo_content_analyzer'))
 
 try:
     from smart_receipt_processor import process_receipt_image, process_multiple_receipts
@@ -283,7 +282,7 @@ portfolio_template = """
                 <p>
                     Fast receipt tracking powered by Azure Document Intelligence. Upload receipts, extract key data instantly, and organize your expenses with AI-driven OCR. Supports bulk receipt processing and CSV export for easy review.
                 </p>
-                <a href="/smart-receipt-tracker" class="project-link">Try Live App</a>
+                <a href="/smart_receipt_tracker" class="project-link">Try Live App</a>
             </div>
             
             <div class="project-card">
