@@ -76,7 +76,7 @@ def get_seo_insights(content):
     entities = filter_entities(entities_raw)
 
     # 4. Readability & Grade Level
-    readability = textstat.flesch_reading_ease(content)
+    readability = int(round(textstat.flesch_reading_ease(content)))  # Ensure whole number
     grade_level = textstat.text_standard(content)
 
     # 5. Content Structure Feedback

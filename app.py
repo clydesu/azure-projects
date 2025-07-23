@@ -4,7 +4,8 @@ import sys
 import logging
 from dotenv import load_dotenv
 
-seo_summarizer_path = os.path.join(os.path.dirname(__file__), 'SEO-Content-Analyzer')
+import sys, os
+seo_summarizer_path = os.path.join(os.path.dirname(__file__), 'seo-content-Analyzer')
 if seo_summarizer_path not in sys.path:
     sys.path.append(seo_summarizer_path)
 
@@ -288,7 +289,7 @@ portfolio_template = """
             <div class="project-card">
                 <h3>SEO Content Analyzer</h3>
                 <p>Transform lengthy articles into concise, actionable summaries using Azure Cognitive Services. Perfect for content creators and researchers who need quick insights.</p>
-                <a href="/SEO-Content-Analyzer" class="project-link">Try Live App</a>
+                <a href="/seo-content-analyzer" class="project-link">Try Live App</a>
             </div>
             
             <div class="project-card">
@@ -1101,7 +1102,7 @@ def portfolio():
 def smart_receipt_tracker():
     return render_template_string(smart_receipt_template)
 
-@app.route('/SEO-Content-Analyzer')
+@app.route('/seo-content-analyzer')
 def seo_content_analyzer_alias():
     return render_template_string(seo_content_analyzer_template)
 
