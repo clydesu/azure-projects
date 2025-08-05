@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Azure AI Projects Portfolio
 
 Showcasing AI-powered applications built with Azure Cognitive Services and deployed via GitHub Actions.
@@ -84,4 +83,3 @@ The application is automatically deployed to Azure App Service via GitHub Action
 =======
 # azure-projects
 A collection of personal projects built using Azure's free-tier services. These serve as my hands-on entry into cloud development, highlighting practical skills in deploying and managing cloud solutions as I build my foundation in the field.
->>>>>>> 08a4a19e238056393954bc92e2c99a24b5df4c22
