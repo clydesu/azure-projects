@@ -467,7 +467,7 @@ smart_receipt_template = """
 <body>
     <div class="container">
         <div class="header">
-            <a href="/" class="back-button">← Back to Portfolio</a>
+            <a href="/" class="back-button">←</a>
             <h1>Smart Receipt Tracker</h1>
             <p>Receipt extraction using Azure Document Intelligence</p>
         </div>
@@ -951,7 +951,7 @@ seo_content_analyzer_template = """
     <div class="container">
         <div class="header" style="position:relative;">
             <a href="/" class="back-button" style="position:absolute;left:30px;top:32%;transform:translateY(-50%);background:rgba(255,255,255,0.2);color:white;border:none;padding:10px 20px;border-radius:25px;text-decoration:none;font-size:0.9rem;transition:all 0.3s ease;">
-                ← Back to Portfolio
+                ←
             </a>
             <h1>SEO Content Analyzer</h1>
             <p>Analyze your content for SEO insights using Azure AI Language</p>
